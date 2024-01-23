@@ -3,27 +3,32 @@ import sys
 from settings import *
 from maps import *
 from camera import *
+from player import *
 
 class Game:
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
+        self.delta = 1
         self.new_game()
         self.camera = Camera()
         self.dragging = False
      
     def new_game(self):
         self.map = Map(self)
+        self.player = Player(self)
     
     def update(self):
+        self.player.update()
         pg.display.flip()
-        self.clock.tick(FPS)
+        self.delta =  self.clock.tick(FPS)
         pg.display.set_caption(self.map.name)
         
     def draw(self):
         self.screen.fill('black')
         self.map.draw(self.camera)
+        self.player.draw()
         
     def check_events(self):
         for event in pg.event.get():
