@@ -31,23 +31,23 @@ class Map:
         for level in levels:
             self.world_map[level['height']] = level['map']
     
-    def calculate_isometric_position(self, x, y, z):
-        tile_width = 32
-        tile_height = 32
+    def calculate_isometric_position(self, x, y, z, zoom):
+        tile_width = 32 * zoom
+        tile_height = 32 * zoom
         iso_x_factor = .5
         iso_y_factor = .25
-        return (x - y) * tile_width * iso_x_factor + WIDTH/2, (x + y - z) * tile_height * iso_y_factor + HEIGHT/2
+        return (x - y) * tile_width * iso_x_factor + WIDTH/2, (x + y - z*2) * tile_height * iso_y_factor + HEIGHT/2
     
-    def draw(self):
+    def draw(self, camera):
         for level, map_data in self.world_map.items():
             for row_index, row in enumerate(map_data):
                 for col_index, block_type in enumerate(row):
-                    x, y = self.calculate_isometric_position(row_index, col_index, level)
+                    x, y = self.calculate_isometric_position(row_index, col_index, level, camera.zoom)
 
                     if block_type in self.block_images:
                         block_image = self.block_images[block_type]
-                        resized_block_image = pg.transform.scale(block_image, (TILE_WIDTH, TILE_HEIGHT))
-                        self.game.screen.blit(resized_block_image, (x, y))
+                        resized_block_image = pg.transform.scale(block_image, (TILE_WIDTH * camera.zoom, TILE_HEIGHT * camera.zoom))
+                        self.game.screen.blit(resized_block_image, (x - camera.x, y - camera.y))
         
 if __name__ == '__main__':
     mini_map = Map(None)
