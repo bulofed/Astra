@@ -1,22 +1,26 @@
 import pygame as pg
 import sys
 from settings import *
+from maps import *
 
 class Game:
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
+        self.new_game()
      
     def new_game(self):
-        pass
+        self.map = Map(self)
     
     def update(self):
         pg.display.flip()
         self.clock.tick(FPS)
+        pg.display.set_caption(self.map.name)
         
     def draw(self):
         self.screen.fill('black')
+        self.map.draw()
         
     def check_events(self):
         for event in pg.event.get():

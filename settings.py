@@ -1,3 +1,5 @@
 #Paramètres du jeu
-RES = WIDTH, HEIGHT = 1600, 900
+RES = WIDTH, HEIGHT = 900, 600
 FPS = 60
+
+TILE_WIDTH = TILE_HEIGHT = 32
