@@ -1,1 +1,1 @@
-- Sprites zoom
+- Position du joueur sur le terrain

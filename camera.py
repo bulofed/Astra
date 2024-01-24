@@ -11,4 +11,5 @@ class Camera:
         self.y += dy
 
     def set_zoom(self, zoom):
-        self.zoom = zoom
+        if 1.0 <= zoom <= 5.0:
+            self.zoom = zoom
