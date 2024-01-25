@@ -1,4 +1,4 @@
-- Position du joueur sur le terrain
+- Cliquer sur une case pour déplacer l'entité sélectionnée.
 
 // Statistiques possibles (Données à récupérer)
 

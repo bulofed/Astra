@@ -1,7 +1,9 @@
 from settings import *
+from entity import *
+from moveIndicator import *
 import pygame as pg
 
-class Player:
+class Player(Entity):
     """
     Represents a player in the game.
 
@@ -42,8 +44,7 @@ class Player:
         self.frame_duration = .5
         self.speed = 1
         self.load_sprites()
-        self.move_indicator = pg.image.load('images/indicators/move.png')
-        self.move_indicators = []
+        self.move_indicator = MoveIndicator(self.game, self)
     
     def load_sprites(self):
         """
@@ -125,7 +126,7 @@ class Player:
         self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         sprite = self.sprites[self.current_frame]
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
-        self.draw_move_indicators()
+        self.move_indicator.draw()
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
         self.entity_rect = pg.Rect(self.x_iso, self.y_iso, SPRITE_WIDTH * self.game.camera.zoom, SPRITE_HEIGHT * self.game.camera.zoom)
     
@@ -139,28 +140,7 @@ class Player:
         Returns:
             None
         """
-        self.move_indicators.clear()
-        for dx in range(-self.speed, self.speed + 1):
-            for dy in range(-self.speed, self.speed + 1):
-                x, y, z = self.x + dx, self.y + dy, self.z - 1
-                block = self.game.map.get_block(x, y, z)
-                if block and block.solid:
-                    self.move_indicators.append((x, y, z))
-    
-    def draw_move_indicators(self):
-        """
-        Draws the move indicators on the game screen.
-
-        Args:
-            self: The player instance.
-
-        Returns:
-            None
-        """
-        for x, y, z in self.move_indicators:
-            x_iso, y_iso = self.game.map.calculate_isometric_position(x, y, z, self.game.camera.zoom)
-            indicator_resized = pg.transform.scale(self.move_indicator, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
-            self.game.screen.blit(indicator_resized, (x_iso - self.game.camera.x, y_iso - self.game.camera.y))
+        self.move_indicator.show_actions()
         
     @property
     def position(self):
