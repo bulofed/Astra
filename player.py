@@ -21,9 +21,9 @@ class Player:
         
         keys = pg.key.get_just_pressed()
         if keys[pg.K_LEFT]:
-            dx -= 1
-        elif keys[pg.K_RIGHT]:
             dx += 1
+        elif keys[pg.K_RIGHT]:
+            dx -= 1
         elif keys[pg.K_UP]:
             dy -= 1
         elif keys[pg.K_DOWN]:
@@ -45,10 +45,11 @@ class Player:
             self.current_frame = (self.current_frame + 1) % len(self.sprites)
             
     def draw(self):
-        x, y = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
+        self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         sprite = self.sprites[self.current_frame]
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
-        self.game.screen.blit(sprite_resized, (x - self.game.camera.x, y - self.game.camera.y))
+        self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
+        self.entity_rect = pg.Rect(self.x_iso, self.y_iso, SPRITE_WIDTH * self.game.camera.zoom, SPRITE_HEIGHT * self.game.camera.zoom)
         
     @property
     def position(self):
@@ -56,4 +57,4 @@ class Player:
     
     @property
     def tile_position(self):
-        return self.x // TILE_WIDTH, self.y // TILE_HEIGHT, self.z
+        return self.entity_rect
