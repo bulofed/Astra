@@ -48,8 +48,6 @@ class Player:
         x, y = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         sprite = self.sprites[self.current_frame]
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
-        x -= SPRITE_WIDTH / 2
-        y -= SPRITE_HEIGHT
         self.game.screen.blit(sprite_resized, (x - self.game.camera.x, y - self.game.camera.y))
         
     @property
