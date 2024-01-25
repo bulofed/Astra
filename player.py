@@ -10,6 +10,8 @@ class Player:
         self.frame_duration = .5
         self.speed = 1
         self.load_sprites()
+        self.move_indicator = pg.image.load('images/indicators/move.png')
+        self.move_indicators = []
     
     def load_sprites(self):
         self.sprites = []
@@ -49,16 +51,24 @@ class Player:
         self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         sprite = self.sprites[self.current_frame]
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
+        self.draw_move_indicators()
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
         self.entity_rect = pg.Rect(self.x_iso, self.y_iso, SPRITE_WIDTH * self.game.camera.zoom, SPRITE_HEIGHT * self.game.camera.zoom)
     
     def show_actions(self):
+        self.move_indicators.clear()
         for dx in range(-self.speed, self.speed + 1):
             for dy in range(-self.speed, self.speed + 1):
                 x, y, z = self.x + dx, self.y + dy, self.z - 1
                 block = self.game.map.get_block(x, y, z)
                 if block and block.solid:
-                    print(f"Can move to block at ({x}, {y}, {z})")
+                    self.move_indicators.append((x, y, z))
+    
+    def draw_move_indicators(self):
+        for x, y, z in self.move_indicators:
+            x_iso, y_iso = self.game.map.calculate_isometric_position(x, y, z, self.game.camera.zoom)
+            indicator_resized = pg.transform.scale(self.move_indicator, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
+            self.game.screen.blit(indicator_resized, (x_iso - self.game.camera.x, y_iso - self.game.camera.y))
         
     @property
     def position(self):
