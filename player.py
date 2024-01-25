@@ -21,9 +21,9 @@ class Player:
         
         keys = pg.key.get_just_pressed()
         if keys[pg.K_LEFT]:
-            dx -= 1
-        elif keys[pg.K_RIGHT]:
             dx += 1
+        elif keys[pg.K_RIGHT]:
+            dx -= 1
         elif keys[pg.K_UP]:
             dy -= 1
         elif keys[pg.K_DOWN]:
