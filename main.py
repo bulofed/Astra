@@ -33,25 +33,46 @@ class Game:
     def check_events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
-                pg.quit()
-                sys.exit()
+                self.quit_game()
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.dragging = True
-                    self.drag_start = pg.mouse.get_pos()
-                elif event.button == 4:
-                    self.camera.set_zoom(self.camera.zoom + .5)
-                elif event.button == 5:
-                    self.camera.set_zoom(self.camera.zoom - .5)
+                self.handle_mouse_button_down(event)
             elif event.type == pg.MOUSEBUTTONUP:
-                if event.button == 1:
-                    self.dragging = False
+                self.handle_mouse_button_up(event)
             elif event.type == pg.MOUSEMOTION:
-                if self.dragging:
-                    x, y = pg.mouse.get_pos()
-                    dx, dy = x - self.drag_start[0], y - self.drag_start[1]
-                    self.camera.move(-dx, -dy)
-                    self.drag_start = (x, y)
+                self.handle_mouse_motion()
+
+    def quit_game(self):
+        pg.quit()
+        sys.exit()
+
+    def handle_mouse_button_down(self, event):
+        if event.button == 1:
+            self.handle_left_click()
+            self.dragging = True
+            self.drag_start = pg.mouse.get_pos()
+        elif event.button in [4, 5]:
+            self.adjust_zoom(event.button)
+
+    def handle_left_click(self):
+        x, y = pg.mouse.get_pos()
+        player_rect = self.player.entity_rect
+        if player_rect.collidepoint(x, y):
+            print('Player clicked')
+
+    def adjust_zoom(self, button):
+        zoom_adjustment = .5 if button == 4 else -.5
+        self.camera.set_zoom(self.camera.zoom + zoom_adjustment)
+
+    def handle_mouse_button_up(self, event):
+        if event.button == 1:
+            self.dragging = False
+
+    def handle_mouse_motion(self):
+        if self.dragging:
+            x, y = pg.mouse.get_pos()
+            dx, dy = x - self.drag_start[0], y - self.drag_start[1]
+            self.camera.move(-dx, -dy)
+            self.drag_start = (x, y)
         
     def run(self):
         while True:
