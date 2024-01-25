@@ -57,7 +57,7 @@ class Game:
         x, y = pg.mouse.get_pos()
         player_rect = self.player.entity_rect
         if player_rect.collidepoint(x, y):
-            print('Player clicked')
+            self.player.show_actions()
 
     def adjust_zoom(self, button):
         zoom_adjustment = .5 if button == 4 else -.5

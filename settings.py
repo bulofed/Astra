@@ -9,4 +9,4 @@ CAMERA_X = 0
 CAMERA_Y = 0
 ZOOM = 1.0
 
-PLAYER_POS = 0, 0, 2
+PLAYER_POS = 2, 2, 2

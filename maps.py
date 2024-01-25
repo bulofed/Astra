@@ -2,6 +2,11 @@ import pygame as pg
 import os
 from settings import *
 
+class Block:
+    def __init__(self, type):
+        self.type = type
+        self.solid = type in [1, 2, 3, 4] # A block is solid if its type is in the list
+    
 class Map:
     def __init__(self, game):
         self.game = game
@@ -29,7 +34,11 @@ class Map:
         self.name = self.mini_map['name']
         levels = self.mini_map['levels']
         for level in levels:
-            self.world_map[level['height']] = level['map']
+            map_data = []
+            for row in level['map']:
+                map_row = [Block(block_type) for block_type in row]
+                map_data.append(map_row)
+            self.world_map[level['height']] = map_data
     
     def calculate_isometric_position(self, x, y, z, zoom):
         obj_width = TILE_WIDTH * zoom
@@ -41,13 +50,18 @@ class Map:
     def draw(self, camera):
         for level, map_data in self.world_map.items():
             for row_index, row in enumerate(map_data):
-                for col_index, block_type in enumerate(row):
+                for col_index, block in enumerate(row):
                     x, y = self.calculate_isometric_position(row_index, col_index, level, camera.zoom)
 
-                    if block_type in self.block_images:
-                        block_image = self.block_images[block_type]
+                    if block.type in self.block_images:
+                        block_image = self.block_images[block.type]
                         resized_block_image = pg.transform.scale(block_image, (TILE_WIDTH * camera.zoom, TILE_HEIGHT * camera.zoom))
                         self.game.screen.blit(resized_block_image, (x - camera.x, y - camera.y))
+
+    def get_block(self, x, y, z):
+        if z in self.world_map and 0 <= x < len(self.world_map[z]) and 0 <= y < len(self.world_map[z][x]):
+            return self.world_map[z][x][y]
+        return None
         
 if __name__ == '__main__':
     mini_map = Map(None)

@@ -8,6 +8,7 @@ class Player:
         self.current_frame = 0
         self.animation_time = 0
         self.frame_duration = .5
+        self.speed = 1
         self.load_sprites()
     
     def load_sprites(self):
@@ -50,6 +51,14 @@ class Player:
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
         self.entity_rect = pg.Rect(self.x_iso, self.y_iso, SPRITE_WIDTH * self.game.camera.zoom, SPRITE_HEIGHT * self.game.camera.zoom)
+    
+    def show_actions(self):
+        for dx in range(-self.speed, self.speed + 1):
+            for dy in range(-self.speed, self.speed + 1):
+                x, y, z = self.x + dx, self.y + dy, self.z - 1
+                block = self.game.map.get_block(x, y, z)
+                if block and block.solid:
+                    print(f"Can move to block at ({x}, {y}, {z})")
         
     @property
     def position(self):
