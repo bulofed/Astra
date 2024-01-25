@@ -1,1 +1,13 @@
 - Position du joueur sur le terrain
+
+// Statistiques possibles (Données à récupérer)
+
+° Victoires par parties / niveaux
+° Scores par parties / niveaux
+° Objets récupérés par partie / niveaux
+° Ennemis vaincus par parties / niveaux
+° Temps par niveaux
+° Total de temps d'une partie
+° Nombre de parties jouées
+° Moyenne de score par parties
+° Nombre de tours joués
