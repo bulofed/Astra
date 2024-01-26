@@ -125,8 +125,7 @@ class Game:
         """
         x, y = pg.mouse.get_pos()
         if self.selected_player is None:
-            player_rect = self.player.entity_rect
-            if player_rect.collidepoint(x, y):
+            if self.player.player_mask.overlap_area(self.mouse_mask, (x - (self.player.x_iso - self.camera.x), y - (self.player.y_iso - self.camera.y))) > 0:
                 self.selected_player = self.player
                 self.player.show_actions()
         else:

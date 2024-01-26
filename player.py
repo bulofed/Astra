@@ -24,7 +24,6 @@ class Player(Entity):
         sprites: The list of player sprites for animation.
         x_iso: The isometric x-coordinate of the player's position.
         y_iso: The isometric y-coordinate of the player's position.
-        entity_rect: The rectangular area occupied by the player on the screen.
 
     Methods:
         load_sprites: Loads player sprites for animation.
@@ -33,7 +32,6 @@ class Player(Entity):
         draw: Draws the player on the screen.
         show_actions: Prints available actions around the player.
         position: Returns the current position of the player.
-        tile_position: Returns the rectangular area occupied by the player on the screen.
     """
 
     def __init__(self, game):
@@ -94,7 +92,7 @@ class Player(Entity):
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
         self.move_indicator.draw()
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
-        self.entity_rect = pg.Rect(self.x_iso, self.y_iso, SPRITE_WIDTH * self.game.camera.zoom, SPRITE_HEIGHT * self.game.camera.zoom)
+        self.player_mask = pg.mask.from_surface(sprite_resized)
     
     def show_actions(self):
         """
@@ -126,7 +124,3 @@ class Player(Entity):
     @property
     def position(self):
         return self.x, self.y, self.z
-    
-    @property
-    def tile_position(self):
-        return self.entity_rect
