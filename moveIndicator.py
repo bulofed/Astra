@@ -12,7 +12,7 @@ class MoveIndicator(Indicator):
         for dx, dy in itertools.product(range(-self.player.speed, self.player.speed + 1), range(-self.player.speed, self.player.speed + 1)):
             x, y, z = self.player.x + dx, self.player.y + dy, self.player.z - 1
             block = self.game.map.get_block(x, y, z)
-            if block and block.solid and (x, y, z) not in self.player.attack_indicator.indicators:
+            if block and block.solid and not self.player.is_position_occupied(x, y, z):
                 self.indicators.append((x, y, z))
 
     def draw(self):

@@ -39,8 +39,10 @@ class Player(Entity):
         super().__init__(game, x, y, z)
         self.speed = 1
         self.range = 1
-        self.attack_indicator = AttackIndicator(self.game, self)
-        self.move_indicator = MoveIndicator(self.game, self)
+        self.max_health = 20
+        self.health = self.max_health
+        self.damage = 5
+        self.indicators = [AttackIndicator(game, self), MoveIndicator(game, self)]
         
     
     def load_sprites(self):
@@ -83,8 +85,8 @@ class Player(Entity):
         Returns:
             None
         """
-        self.move_indicator.draw()
-        self.attack_indicator.draw()
+        for indicator in self.indicators:
+            indicator.draw()
         super().draw()
     
     def show_actions(self):
@@ -97,8 +99,8 @@ class Player(Entity):
         Returns:
             None
         """
-        self.attack_indicator.show_actions()
-        self.move_indicator.show_actions()
+        for indicator in self.indicators:
+            indicator.show_actions()
     
     def handle_click(self, mouse_pos):
         """
@@ -111,10 +113,10 @@ class Player(Entity):
         Returns:
             None
         """
-        self.attack_indicator.handle_click(mouse_pos)
-        self.move_indicator.handle_click(mouse_pos)
-        self.attack_indicator.indicators.clear()
-        self.move_indicator.indicators.clear()
+        for indicator in self.indicators:
+            indicator.handle_click(mouse_pos)
+        for indicator in self.indicators:
+            indicator.indicators.clear()
             
         
     def move(self, x, y, z):
@@ -132,7 +134,7 @@ class Player(Entity):
         """
         self.x, self.y, self.z = x, y, z
         
-    def attack(self, x, y, z):
+    def attack(self, target):
         """
         Attacks the entity at the specified position.
 
@@ -145,7 +147,7 @@ class Player(Entity):
         Returns:
             None
         """
-        pass
+        super().attack(target)
         
     def is_clicked(self, mouse_pos):
         """
@@ -159,6 +161,21 @@ class Player(Entity):
             True if the player is clicked, False otherwise.
         """
         return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None
+    
+    def is_position_occupied(self, x, y, z):
+        """
+        Checks if the specified position is occupied.
+
+        Args:
+            self: The player instance.
+            x: The x-coordinate of the position to check.
+            y: The y-coordinate of the position to check.
+            z: The z-coordinate of the position to check.
+
+        Returns:
+            True if the position is occupied, False otherwise.
+        """
+        return any((x, y, z) in indicator.indicators for indicator in self.indicators)
         
     @property
     def position(self):

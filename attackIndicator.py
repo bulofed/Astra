@@ -20,7 +20,8 @@ class AttackIndicator(Indicator):
         super().draw()
         
     def handle_action(self, x, y, z):
-        self.player.attack(x, y, z)
+        entity = self.game.map.get_entity(x, y, z)
+        self.player.attack(entity)
         
     def handle_click(self, mouse_pos):
         super().handle_click(mouse_pos)

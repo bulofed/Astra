@@ -121,6 +121,27 @@ class Map:
         if z in self.world_map and 0 <= x < len(self.world_map[z]) and 0 <= y < len(self.world_map[z][x]):
             return self.world_map[z][x][y]
         return None
+    
+    def get_entity(self, x, y, z):
+        """
+        Retrieves the entity at the specified coordinates.
+
+        Args:
+            x: The x-coordinate of the entity.
+            y: The y-coordinate of the entity.
+            z: The z-coordinate of the entity.
+
+        Returns:
+            The entity at the specified coordinates, or None if the coordinates are out of bounds.
+        """
+        return next(
+            (
+                entity
+                for entity in self.game.entities
+                if entity.x == x and entity.y == y and entity.z == z
+            ),
+            None,
+        )
         
 if __name__ == '__main__':
     mini_map = Map(None)
