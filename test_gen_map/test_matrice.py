@@ -1,15 +1,14 @@
 import random
 import json
 
-
-
-
 def creer_matrice(taille):
     matrice_jeu = []
+    liste_random = []
     for _ in range(taille):
         ligne = []
         for _ in range(taille):
             random_block = random.randint(1,8)
+            liste_random.append(random_block)
             ligne.append(random_block)
         matrice_jeu.append(ligne)
     return matrice_jeu
@@ -24,11 +23,11 @@ def creer_level():
 
 def creer_map():
     maps = []
-    for i in range(4):
+    for i in range(1):
         level = creer_level()
         map = {"name": "Stage {}".format(i), "levels": level}
         maps.append(map)
-    return maps
+    return map
     
     
     
