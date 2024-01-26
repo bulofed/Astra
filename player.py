@@ -64,39 +64,6 @@ class Player(Entity):
             pg.image.load(f'images/player/idle_d{i}.png') for i in range(1, 3)
         )
         
-    def movement(self):
-        """
-        Handles player movement based on keyboard input.
-
-        This method updates the player's position based on the keys pressed by the user. It modifies the `x`, `y`, and `z` attributes of the instance accordingly.
-
-        Args:
-            self: The instance of the class.
-
-        Returns:
-            None
-        """
-
-        dx, dy, dz = 0, 0, 0
-        
-        keys = pg.key.get_just_pressed()
-        if keys[pg.K_LEFT]:
-            dx += 1
-        elif keys[pg.K_RIGHT]:
-            dx -= 1
-        elif keys[pg.K_UP]:
-            dy -= 1
-        elif keys[pg.K_DOWN]:
-            dy += 1
-        elif keys[pg.K_SPACE]:
-            dz += 1
-        elif keys[pg.K_LSHIFT]:
-            dz -= 1
-    
-        self.x += dx
-        self.y += dy
-        self.z += dz
-        
     def update(self):
         """
         Updates the player's state and animation.
@@ -107,7 +74,6 @@ class Player(Entity):
         Returns:
             None
         """
-        self.movement()
         self.animation_time += self.game.delta / 1000
         if self.animation_time >= self.frame_duration:
             self.animation_time -= self.frame_duration
@@ -141,6 +107,21 @@ class Player(Entity):
             None
         """
         self.move_indicator.show_actions()
+        
+    def move(self, x, y, z):
+        """
+        Moves the player to the specified position.
+
+        Args:
+            self: The player instance.
+            x: The x-coordinate of the position to move to.
+            y: The y-coordinate of the position to move to.
+            z: The z-coordinate of the position to move to.
+
+        Returns:
+            None
+        """
+        self.x, self.y, self.z = x, y, z
         
     @property
     def position(self):

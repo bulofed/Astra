@@ -14,6 +14,7 @@ class Game:
         self.new_game()
         self.camera = Camera()
         self.dragging = False
+        self.selected_player = None
      
     def new_game(self):
         """
@@ -25,8 +26,12 @@ class Game:
         Returns:
             None
         """
+        pg.mouse.set_visible(False)
         self.map = Map(self)
         self.player = Player(self)
+        self.mouse = pg.Surface((5, 5))
+        self.mouse.fill('red')
+        self.mouse_mask = pg.mask.from_surface(self.mouse)
     
     def update(self):
         """
@@ -56,6 +61,7 @@ class Game:
         self.screen.fill('black')
         self.map.draw(self.camera)
         self.player.draw()
+        self.screen.blit(self.mouse, self.mouse_pos)
         
     def check_events(self):
         """
@@ -118,9 +124,13 @@ class Game:
             None
         """
         x, y = pg.mouse.get_pos()
-        player_rect = self.player.entity_rect
-        if player_rect.collidepoint(x, y):
-            self.player.show_actions()
+        if self.selected_player is None:
+            player_rect = self.player.entity_rect
+            if player_rect.collidepoint(x, y):
+                self.selected_player = self.player
+                self.player.show_actions()
+        else:
+            self.selected_player.move_indicator.handle_click((x, y))
 
     def adjust_zoom(self, button):
         """
@@ -175,6 +185,7 @@ class Game:
             None
         """
         while True:
+            self.mouse_pos = pg.mouse.get_pos()
             self.check_events()
             self.update()
             self.draw()
