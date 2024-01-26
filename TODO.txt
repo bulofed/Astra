@@ -1,5 +1,3 @@
-- Cliquer sur une case pour déplacer l'entité sélectionnée.
-
 // Statistiques possibles (Données à récupérer)
 
 ° Victoires par parties / niveaux

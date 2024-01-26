@@ -4,6 +4,7 @@ from settings import *
 from maps import *
 from camera import *
 from player import *
+from goblin import *
 
 class Game:
     def __init__(self):
@@ -11,6 +12,7 @@ class Game:
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
         self.delta = 1
+        self.entities = []
         self.new_game()
         self.camera = Camera()
         self.dragging = False
@@ -26,12 +28,19 @@ class Game:
         Returns:
             None
         """
-        pg.mouse.set_visible(False)
         self.map = Map(self)
-        self.player = Player(self)
         self.mouse = pg.Surface((5, 5))
+        self.set_mouse()
+        self.init_entities()
+    
+    def set_mouse(self):
+        pg.mouse.set_visible(False)
         self.mouse.fill('red')
         self.mouse_mask = pg.mask.from_surface(self.mouse)
+    
+    def init_entities(self):
+        self.entities.append(Player(self, 2, 2, 2))
+        self.entities.append(Goblin(self, 0, 2, 2))
     
     def update(self):
         """
@@ -43,7 +52,8 @@ class Game:
         Returns:
             None
         """
-        self.player.update()
+        for entity in self.entities:
+            entity.update()
         pg.display.flip()
         self.delta =  self.clock.tick(FPS)
         pg.display.set_caption(self.map.name)
@@ -60,7 +70,8 @@ class Game:
         """
         self.screen.fill('black')
         self.map.draw(self.camera)
-        self.player.draw()
+        for entity in self.entities:
+            entity.draw()
         self.screen.blit(self.mouse, self.mouse_pos)
         
     def check_events(self):
@@ -125,9 +136,11 @@ class Game:
         """
         x, y = pg.mouse.get_pos()
         if self.selected_player is None:
-            if self.player.player_mask.overlap_area(self.mouse_mask, (x - (self.player.x_iso - self.camera.x), y - (self.player.y_iso - self.camera.y))) > 0:
-                self.selected_player = self.player
-                self.player.show_actions()
+            for entity in self.entities:
+                if isinstance(entity, Player) and entity.is_clicked((x, y)):
+                    self.selected_player = entity
+                    entity.show_actions()
+                    break
         else:
             self.selected_player.move_indicator.handle_click((x, y))
 

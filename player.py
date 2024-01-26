@@ -34,14 +34,9 @@ class Player(Entity):
         position: Returns the current position of the player.
     """
 
-    def __init__(self, game):
-        self.game = game
-        self.x, self.y, self.z = PLAYER_POS
-        self.current_frame = 0
-        self.animation_time = 0
-        self.frame_duration = .5
+    def __init__(self, game, x, y, z):
+        super().__init__(game, x, y, z)
         self.speed = 1
-        self.load_sprites()
         self.move_indicator = MoveIndicator(self.game, self)
     
     def load_sprites(self):
@@ -72,10 +67,7 @@ class Player(Entity):
         Returns:
             None
         """
-        self.animation_time += self.game.delta / 1000
-        if self.animation_time >= self.frame_duration:
-            self.animation_time -= self.frame_duration
-            self.current_frame = (self.current_frame + 1) % len(self.sprites)
+        super().update()
             
     def draw(self):
         """
@@ -87,12 +79,8 @@ class Player(Entity):
         Returns:
             None
         """
-        self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
-        sprite = self.sprites[self.current_frame]
-        sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
         self.move_indicator.draw()
-        self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
-        self.player_mask = pg.mask.from_surface(sprite_resized)
+        super().draw()
     
     def show_actions(self):
         """
@@ -120,6 +108,19 @@ class Player(Entity):
             None
         """
         self.x, self.y, self.z = x, y, z
+        
+    def is_clicked(self, mouse_pos):
+        """
+        Checks if the player is clicked.
+
+        Args:
+            self: The player instance.
+            mouse_pos: The position of the mouse cursor.
+
+        Returns:
+            True if the player is clicked, False otherwise.
+        """
+        return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None
         
     @property
     def position(self):
