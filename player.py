@@ -1,6 +1,7 @@
 from settings import *
 from entity import *
 from moveIndicator import *
+from attackIndicator import *
 import pygame as pg
 
 class Player(Entity):
@@ -37,7 +38,10 @@ class Player(Entity):
     def __init__(self, game, x, y, z):
         super().__init__(game, x, y, z)
         self.speed = 1
+        self.range = 1
+        self.attack_indicator = AttackIndicator(self.game, self)
         self.move_indicator = MoveIndicator(self.game, self)
+        
     
     def load_sprites(self):
         """
@@ -80,6 +84,7 @@ class Player(Entity):
             None
         """
         self.move_indicator.draw()
+        self.attack_indicator.draw()
         super().draw()
     
     def show_actions(self):
@@ -92,7 +97,25 @@ class Player(Entity):
         Returns:
             None
         """
+        self.attack_indicator.show_actions()
         self.move_indicator.show_actions()
+    
+    def handle_click(self, mouse_pos):
+        """
+        Handles mouse click events.
+
+        Args:
+            self: The player instance.
+            mouse_pos: The position of the mouse cursor.
+
+        Returns:
+            None
+        """
+        self.attack_indicator.handle_click(mouse_pos)
+        self.move_indicator.handle_click(mouse_pos)
+        self.attack_indicator.indicators.clear()
+        self.move_indicator.indicators.clear()
+            
         
     def move(self, x, y, z):
         """
@@ -108,6 +131,21 @@ class Player(Entity):
             None
         """
         self.x, self.y, self.z = x, y, z
+        
+    def attack(self, x, y, z):
+        """
+        Attacks the entity at the specified position.
+
+        Args:
+            self: The player instance.
+            x: The x-coordinate of the position to attack.
+            y: The y-coordinate of the position to attack.
+            z: The z-coordinate of the position to attack.
+
+        Returns:
+            None
+        """
+        pass
         
     def is_clicked(self, mouse_pos):
         """

@@ -142,7 +142,7 @@ class Game:
                     entity.show_actions()
                     break
         else:
-            self.selected_player.move_indicator.handle_click((x, y))
+            self.selected_player.handle_click((x, y))
 
     def adjust_zoom(self, button):
         """

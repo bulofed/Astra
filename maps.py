@@ -25,7 +25,7 @@ class Map:
         Returns:
             None
         """
-        map_path = os.path.join('maps', 'test.json')
+        map_path = os.path.join('maps', 'stage0.json')
         with open(map_path, 'r') as f:
             self.mini_map = eval(f.read())
             
