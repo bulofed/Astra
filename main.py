@@ -13,6 +13,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.delta = 1
         self.entities = []
+        self.current_turn = 0
         self.new_game()
         self.camera = Camera()
         self.dragging = False
@@ -125,24 +126,26 @@ class Game:
             self.adjust_zoom(event.button)
 
     def handle_left_click(self):
-        """
-        Handles left click events.
-
-        Args:
-            None
-
-        Returns:
-            None
-        """
         x, y = pg.mouse.get_pos()
-        if self.selected_player is None:
-            for entity in self.entities:
-                if isinstance(entity, Player) and entity.is_clicked((x, y)):
-                    self.selected_player = entity
-                    entity.show_actions()
-                    break
-        else:
+        clicked_entity = self.get_clicked_entity((x, y))
+
+        if self.selected_player is None and self.is_player_turn(clicked_entity):
+            self.select_player(clicked_entity)
+        elif self.selected_player is not None:
             self.selected_player.handle_click((x, y))
+
+    def get_clicked_entity(self, mouse_pos):
+        return next(
+            (entity for entity in self.entities if entity.is_clicked(mouse_pos)),
+            None,
+        )
+
+    def is_player_turn(self, entity):
+        return isinstance(entity, Player) and entity == self.entities[self.current_turn]
+
+    def select_player(self, player):
+        self.selected_player = player
+        player.show_actions()
 
     def adjust_zoom(self, button):
         """
@@ -185,6 +188,22 @@ class Game:
             dx, dy = x - self.drag_start[0], y - self.drag_start[1]
             self.camera.move(-dx, -dy)
             self.drag_start = (x, y)
+    
+    def next_turn(self):
+        """
+        Advances the turn.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        self.current_turn = (self.current_turn + 1) % len(self.entities)
+        current_entity = self.entities[self.current_turn]
+        current_entity.center_camera(self.camera)
+        if isinstance(current_entity, Monster):
+            current_entity.random_action()
         
     def run(self):
         """

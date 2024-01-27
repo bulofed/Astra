@@ -4,15 +4,15 @@ from settings import *
 import pygame as pg
 
 class Indicator(ABC):
-    def __init__(self, game, player, indicator):
+    def __init__(self, game, entity, indicator):
         self.game = game
-        self.player = player
+        self.entity = entity
         self.indicator = indicator
         self.indicator_mask = pg.mask.from_surface(self.indicator)
         self.indicators = []
 
     @abstractmethod
-    def show_actions(self, int):
+    def search_actions(self, int):
         pass
 
     def draw(self):
