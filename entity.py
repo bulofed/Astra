@@ -9,8 +9,8 @@ class Entity(ABC):
         self.current_frame = 0
         self.animation_time = 0
         self.frame_duration = .5
-        self.speed = 1
         self.load_sprites()
+        self.indicators = []
     
     @abstractmethod
     def load_sprites(self):
@@ -33,3 +33,25 @@ class Entity(ABC):
         target.health -= self.damage
         if target.health <= 0:
             self.game.entities.remove(target)
+            
+    def is_clicked(self, mouse_pos):
+        return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None
+    
+    def center_camera(self, camera):
+        camera.x = self.x_iso - WIDTH/2 + SPRITE_WIDTH/2 * camera.zoom
+        camera.y = self.y_iso - HEIGHT/2 + SPRITE_HEIGHT/2 * camera.zoom
+        
+    def add_indicator(self, indicator):
+        self.indicators.append(indicator)
+        
+    def remove_indicator(self, indicator):
+        self.indicators.remove(indicator)
+        
+    def clear_indicators(self):
+        self.indicators.clear()
+        
+    def can_attack(self, entity, target_type):
+        if isinstance(entity, target_type):
+            return False
+        dx, dy, dz = entity.x - self.x, entity.y - self.y, entity.z - self.z
+        return abs(dx) <= self.range and abs(dy) <= self.range and abs(dz) <= self.range and (dx != 0 or dy != 0 or dz != 0)
