@@ -1,10 +1,10 @@
 import pygame as pg
 import sys
-from settings import *
-from maps import *
-from camera import *
-from player import *
-from goblin import *
+from game.settings import *
+from game.maps import *
+from game.camera import *
+from entities.player.player import *
+from entities.monsters.type.goblin import *
 
 class Game:
     def __init__(self):

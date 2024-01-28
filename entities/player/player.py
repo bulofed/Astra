@@ -1,5 +1,5 @@
-from settings import *
-from entity import *
+from game.settings import *
+from entities.entity import *
 import pygame as pg
 
 class Player(Entity):
@@ -102,7 +102,6 @@ class Player(Entity):
                 indicator.handle_click(mouse_pos)
                 indicator.actions_positions.clear()
                 self.game.next_turn()
-                break
             else:
                 indicator.actions_positions.clear()
     

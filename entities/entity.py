@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from settings import *
-from attackIndicator import *
-from moveIndicator import *
+from game.settings import *
+from indicators.type.attackIndicator import  *
+from indicators.type.moveIndicator import *
 import pygame as pg
 
 class Entity(ABC):

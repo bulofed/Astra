@@ -1,7 +1,7 @@
 import pygame as pg
-from monster import *
-from moveIndicator import *
-from attackIndicator import *
+from entities.monsters.monster import *
+from indicators.type.moveIndicator import *
+from indicators.type.attackIndicator import *
 from random import randint
 
 class Goblin(Monster):

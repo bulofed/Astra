@@ -1,6 +1,6 @@
 import itertools
 from abc import ABC, abstractmethod
-from settings import *
+from game.settings import *
 import pygame as pg
 
 class Indicator(ABC):

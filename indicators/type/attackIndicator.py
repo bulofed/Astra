@@ -1,5 +1,5 @@
-from indicator import *
-from settings import *
+from indicators.indicator import *
+from game.settings import *
 import pygame as pg
 
 class AttackIndicator(Indicator):
@@ -14,8 +14,8 @@ class AttackIndicator(Indicator):
                 self.actions_positions.append((entity.x, entity.y, entity.z - 1))
         
     def handle_action(self, x, y, z):
-        entity = self.game.map.get_entity(x, y, z + 1)
-        self.entity.attack(entity)
+        enemy = self.game.map.get_entity(x, y, z + 1)
+        self.entity.attack(enemy)
     
     def has_possible_actions(self):
         return len(self.actions_positions) > 0

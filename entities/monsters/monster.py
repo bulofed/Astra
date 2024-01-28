@@ -1,4 +1,4 @@
-from entity import *
+from entities.entity import *
 import random as rd
 
 class Monster(Entity):

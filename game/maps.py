@@ -1,6 +1,6 @@
 import pygame as pg
 import os
-from settings import *
+from game.settings import *
 
 class Block:
     def __init__(self, type):

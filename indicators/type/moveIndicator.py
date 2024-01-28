@@ -1,5 +1,5 @@
-from indicator import *
-from settings import *
+from indicators.indicator import *
+from game.settings import *
 import pygame as pg
 
 class MoveIndicator(Indicator):
