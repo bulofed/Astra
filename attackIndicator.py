@@ -8,14 +8,14 @@ class AttackIndicator(Indicator):
         super().__init__(game, entity, indicator)
         
     def search_actions(self):
-        self.indicators.clear()
+        self.actions_positions.clear()
         for entity in self.game.entities:
             if entity.can_attack(self.entity):
-                self.indicators.append((entity.x, entity.y, entity.z - 1))
+                self.actions_positions.append((entity.x, entity.y, entity.z - 1))
         
     def handle_action(self, x, y, z):
-        entity = self.game.map.get_entity(x, y, z)
+        entity = self.game.map.get_entity(x, y, z + 1)
         self.entity.attack(entity)
     
     def has_possible_actions(self):
-        return len(self.indicators) > 0
+        return len(self.actions_positions) > 0

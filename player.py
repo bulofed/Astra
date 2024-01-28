@@ -1,7 +1,5 @@
 from settings import *
 from entity import *
-from moveIndicator import *
-from attackIndicator import *
 import pygame as pg
 
 class Player(Entity):
@@ -41,8 +39,7 @@ class Player(Entity):
         self.range = 1
         self.max_health = 20
         self.health = self.max_health
-        self.damage = 5
-        self.indicators = [AttackIndicator(game, self), MoveIndicator(game, self)]       
+        self.damage = 5      
     
     def load_sprites(self):
         """
@@ -72,7 +69,7 @@ class Player(Entity):
         Returns:
             None
         """
-        for indicator in self.indicators:
+        for indicator in self.indicators_used:
             indicator.draw()
         super().draw()
     
@@ -86,7 +83,7 @@ class Player(Entity):
         Returns:
             None
         """
-        for indicator in self.indicators:
+        for indicator in self.indicators_used:
             indicator.search_actions()
     
     def handle_click(self, mouse_pos):
@@ -100,26 +97,14 @@ class Player(Entity):
         Returns:
             None
         """
-        for indicator in self.indicators:
-            indicator.handle_click(mouse_pos)
-        for indicator in self.indicators:
-            indicator.indicators.clear()
-        self.game.next_turn()
-            
-    def move(self, x, y, z):
-        """
-        Moves the player to the specified position.
-
-        Args:
-            self: The player instance.
-            x: The x-coordinate of the position to move to.
-            y: The y-coordinate of the position to move to.
-            z: The z-coordinate of the position to move to.
-
-        Returns:
-            None
-        """
-        self.x, self.y, self.z = x, y, z
+        for indicator in self.indicators_used:
+            if indicator.is_clicked(mouse_pos):
+                indicator.handle_click(mouse_pos)
+                indicator.actions_positions.clear()
+                self.game.next_turn()
+                break
+            else:
+                indicator.actions_positions.clear()
     
     def is_position_occupied(self, x, y, z):
         """
@@ -134,7 +119,7 @@ class Player(Entity):
         Returns:
             True if the position is occupied, False otherwise.
         """
-        return any((x, y, z) in indicator.indicators for indicator in self.indicators)
+        return any((x, y, z) in indicator.actions_positions for indicator in self.indicators_used)
     
     def can_attack(self, entity):
         return super().can_attack(entity, Player)

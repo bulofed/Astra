@@ -132,7 +132,8 @@ class Game:
         if self.selected_player is None and self.is_player_turn(clicked_entity):
             self.select_player(clicked_entity)
         elif self.selected_player is not None:
-            self.selected_player.handle_click((x, y))
+            if not self.selected_player.handle_click((x, y)):
+                self.selected_player = None
 
     def get_clicked_entity(self, mouse_pos):
         return next(

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from settings import *
+from attackIndicator import *
+from moveIndicator import *
 import pygame as pg
 
 class Entity(ABC):
@@ -10,7 +12,7 @@ class Entity(ABC):
         self.animation_time = 0
         self.frame_duration = .5
         self.load_sprites()
-        self.indicators = []
+        self.indicators_used= [AttackIndicator(game, self), MoveIndicator(game, self)]
     
     @abstractmethod
     def load_sprites(self):
@@ -29,6 +31,21 @@ class Entity(ABC):
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
         self.entity_mask = pg.mask.from_surface(sprite_resized)
         
+    def move(self, x, y, z):
+        """
+        Moves the entity to the specified position.
+
+        Args:
+            self: The entity instance.
+            x: The x-coordinate of the position to move to.
+            y: The y-coordinate of the position to move to.
+            z: The z-coordinate of the position to move to.
+
+        Returns:
+            None
+        """
+        self.x, self.y, self.z = x, y, z
+        
     def attack(self, target):
         target.health -= self.damage
         if target.health <= 0:
@@ -40,15 +57,6 @@ class Entity(ABC):
     def center_camera(self, camera):
         camera.x = self.x_iso - WIDTH/2 + SPRITE_WIDTH/2 * camera.zoom
         camera.y = self.y_iso - HEIGHT/2 + SPRITE_HEIGHT/2 * camera.zoom
-        
-    def add_indicator(self, indicator):
-        self.indicators.append(indicator)
-        
-    def remove_indicator(self, indicator):
-        self.indicators.remove(indicator)
-        
-    def clear_indicators(self):
-        self.indicators.clear()
         
     def can_attack(self, entity, target_type):
         if isinstance(entity, target_type):

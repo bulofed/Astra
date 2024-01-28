@@ -19,11 +19,6 @@ class Goblin(Monster):
         self.sprites.extend(
             pg.image.load(f'images/goblin/idle_d{i}.png') for i in range(1, 3)
         )
-        
-    def random_action(self):
-        for indicator in self.indicators:
-            indicator.search_actions()
-        self.game.next_turn()
             
     def is_position_occupied(self, x, y, z):
         """
@@ -38,4 +33,4 @@ class Goblin(Monster):
         Returns:
             True if the position is occupied, False otherwise.
         """
-        return any((x, y, z) in indicator.indicators for indicator in self.indicators)
+        return any((x, y, z) in indicator.actions_positions for indicator in self.indicators)
