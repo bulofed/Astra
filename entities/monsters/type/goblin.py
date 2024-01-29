@@ -14,9 +14,11 @@ class Goblin(Monster):
         self.indicators = [AttackIndicator(game, self), MoveIndicator(game, self)]
         
     def load_sprites(self):
-        self.sprites = []
-        self.sprites.extend(
+        self.idle_sprites.extend(
             pg.image.load(f'images/goblin/idle_d{i}.png') for i in range(1, 3)
+        )
+        self.attack_sprites.extend(
+            pg.image.load(f'images/goblin/attack_d{i}.png') for i in range(1, 3)
         )
             
     def is_position_occupied(self, x, y, z):

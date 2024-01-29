@@ -53,10 +53,11 @@ class Player(Entity):
         Returns:
             None
         """
-
-        self.sprites = []
-        self.sprites.extend(
+        self.idle_sprites.extend(
             pg.image.load(f'images/player/idle_d{i}.png') for i in range(1, 3)
+        )
+        self.attack_sprites.extend(
+            pg.image.load(f'images/player/attack_d{i}.png') for i in range(1, 3)
         )
             
     def draw(self):

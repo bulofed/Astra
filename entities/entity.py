@@ -8,9 +8,12 @@ class Entity(ABC):
     def __init__(self, game, x, y, z):
         self.game = game
         self.x, self.y, self.z = x, y, z
+        self.state = 'idle'
         self.current_frame = 0
         self.animation_time = 0
         self.frame_duration = .5
+        self.idle_sprites = []
+        self.attack_sprites = []
         self.load_sprites()
         self.indicators_used= [AttackIndicator(game, self), MoveIndicator(game, self)]
     
@@ -22,11 +25,19 @@ class Entity(ABC):
         self.animation_time += self.game.delta / 1000
         if self.animation_time >= self.frame_duration:
             self.animation_time -= self.frame_duration
-            self.current_frame = (self.current_frame + 1) % len(self.sprites)
+            if self.state == "attacking":
+                self.current_frame = (self.current_frame + 1) % len(self.attack_sprites)
+                if self.current_frame == 0:
+                    self.state = "idle"
+            else:
+                self.current_frame = (self.current_frame + 1) % len(self.idle_sprites)
 
     def draw(self):
         self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
-        sprite = self.sprites[self.current_frame]
+        if self.state == "attacking":
+            sprite = self.attack_sprites[self.current_frame]
+        else:
+            sprite = self.idle_sprites[self.current_frame]
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
         self.entity_mask = pg.mask.from_surface(sprite_resized)
@@ -47,10 +58,15 @@ class Entity(ABC):
         self.x, self.y, self.z = x, y, z
         
     def attack(self, target):
+        self.animate_attack()
         target.health -= self.damage
         if target.health <= 0:
             self.game.entities.remove(target)
             self.game.check_game_over()
+            
+    def animate_attack(self):
+        self.state = 'attacking'
+        self.current_frame = 0
             
     def is_clicked(self, mouse_pos):
         return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None
