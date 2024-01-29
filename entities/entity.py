@@ -50,6 +50,7 @@ class Entity(ABC):
         target.health -= self.damage
         if target.health <= 0:
             self.game.entities.remove(target)
+            self.game.check_game_over()
             
     def is_clicked(self, mouse_pos):
         return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None

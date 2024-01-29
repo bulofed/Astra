@@ -205,6 +205,26 @@ class Game:
         current_entity.center_camera(self.camera)
         if isinstance(current_entity, Monster):
             current_entity.random_action()
+    
+    def check_game_over(self):
+        """
+        Checks if the game is over.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        players = [entity for entity in self.entities if isinstance(entity, Player)]
+        monsters = [entity for entity in self.entities if isinstance(entity, Monster)]
+
+        if not players:
+            print("Game Over: All players have been eliminated.")
+            self.quit_game()
+        elif not monsters:
+            print("Victory: All monsters have been eliminated.")
+            self.quit_game()
         
     def run(self):
         """
