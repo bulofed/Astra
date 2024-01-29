@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
 from game.settings import *
 from indicators.type.attackIndicator import  *
 from indicators.type.moveIndicator import *
 import pygame as pg
 
-class Entity(ABC):
+class Entity():
     def __init__(self, game, x, y, z):
         self.game = game
         self.x, self.y, self.z = x, y, z
@@ -17,9 +16,15 @@ class Entity(ABC):
         self.load_sprites()
         self.indicators_used= [AttackIndicator(game, self), MoveIndicator(game, self)]
     
-    @abstractmethod
     def load_sprites(self):
-        pass
+        parent_class_name = self.__class__.__bases__[0].__name__
+        class_name = self.__class__.__name__
+        self.idle_sprites.extend(
+            pg.image.load(f'images/{parent_class_name}/{class_name}/idle_d{i}.png') for i in range(1, 3)
+        )
+        self.attack_sprites.extend(
+            pg.image.load(f'images/{parent_class_name}/{class_name}/attack_d{i}.png') for i in range(1, 3)
+        )
         
     def update(self):
         self.animation_time += self.game.delta / 1000
@@ -80,3 +85,18 @@ class Entity(ABC):
             return False
         dx, dy, dz = entity.x - self.x, entity.y - self.y, entity.z - self.z
         return abs(dx) <= self.range and abs(dy) <= self.range and abs(dz) <= self.range and (dx != 0 or dy != 0 or dz != 0)
+    
+    def is_position_occupied(self, x, y, z):
+        """
+        Checks if the specified position is occupied.
+
+        Args:
+            self: The player instance.
+            x: The x-coordinate of the position to check.
+            y: The y-coordinate of the position to check.
+            z: The z-coordinate of the position to check.
+
+        Returns:
+            True if the position is occupied, False otherwise.
+        """
+        return any((x, y, z) in indicator.actions_positions for indicator in self.indicators_used)

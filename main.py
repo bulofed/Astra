@@ -3,7 +3,7 @@ import sys
 from game.settings import *
 from game.maps import *
 from game.camera import *
-from entities.player.player import *
+from entities.players.type.swordman import *
 from entities.monsters.type.goblin import *
 
 class Game:
@@ -40,7 +40,7 @@ class Game:
         self.mouse_mask = pg.mask.from_surface(self.mouse)
     
     def init_entities(self):
-        self.entities.append(Player(self, 2, 2, 2))
+        self.entities.append(Swordman(self, 2, 2, 2))
         self.entities.append(Goblin(self, 0, 2, 2))
     
     def update(self):

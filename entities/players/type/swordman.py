@@ -1,6 +1,6 @@
-from entities.monsters.monster import *
+from entities.players.player import *
 
-class Goblin(Monster):
+class Swordman(Player):
     def __init__(self, game, x, y, z):
         super().__init__(game, x, y, z)
         self.speed = 1
