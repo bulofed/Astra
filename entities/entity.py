@@ -15,6 +15,11 @@ class Entity():
         self.attack_sprites = []
         self.load_sprites()
         self.indicators_used= [AttackIndicator(game, self), MoveIndicator(game, self)]
+        self.speed = 1 # Default speed
+        self.range = 1 # Default range
+        self.max_health = 20 # Default max health
+        self.health = self.max_health
+        self.damage = 5 # Default damage
     
     def load_sprites(self):
         parent_class_name = self.__class__.__bases__[0].__name__
@@ -74,7 +79,10 @@ class Entity():
         self.current_frame = 0
             
     def is_clicked(self, mouse_pos):
-        return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None
+        if hasattr(self, 'entity_mask'):
+            return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None
+        else:
+            return False
     
     def center_camera(self, camera):
         camera.x = self.x_iso - WIDTH/2 + SPRITE_WIDTH/2 * camera.zoom
@@ -100,3 +108,6 @@ class Entity():
             True if the position is occupied, False otherwise.
         """
         return any((x, y, z) in indicator.actions_positions for indicator in self.indicators_used)
+    
+    def get_info(self):
+        return f"Name: {self.__class__.__name__}\nHealth: {self.health}/{self.max_health}\nDamage: {self.damage}\nRange: {self.range}\nSpeed: {self.speed}"

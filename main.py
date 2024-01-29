@@ -3,6 +3,7 @@ import sys
 from game.settings import *
 from game.maps import *
 from game.camera import *
+from game.infopanel import *
 from entities.players.type.swordman import *
 from entities.monsters.type.goblin import *
 
@@ -16,8 +17,10 @@ class Game:
         self.current_turn = 0
         self.new_game()
         self.camera = Camera()
+        self.info_panel = InfoPanel(self, 0, 0, WIDTH, HEIGHT)
         self.dragging = False
         self.selected_player = None
+        self.selected_entity = None
      
     def new_game(self):
         """
@@ -58,6 +61,7 @@ class Game:
         pg.display.flip()
         self.delta =  self.clock.tick(FPS)
         pg.display.set_caption(self.map.name)
+        self.info_panel.update(self.selected_entity)
         
     def draw(self):
         """
@@ -74,6 +78,7 @@ class Game:
         for entity in self.entities:
             entity.draw()
         self.screen.blit(self.mouse, self.mouse_pos)
+        self.info_panel.draw()
         
     def check_events(self):
         """
@@ -184,8 +189,10 @@ class Game:
         Returns:
             None
         """
+        x, y = pg.mouse.get_pos()
+        hovered_entity = self.get_clicked_entity((x, y))
+        self.selected_entity = hovered_entity if hovered_entity is not None else None
         if self.dragging:
-            x, y = pg.mouse.get_pos()
             dx, dy = x - self.drag_start[0], y - self.drag_start[1]
             self.camera.move(-dx, -dy)
             self.drag_start = (x, y)
