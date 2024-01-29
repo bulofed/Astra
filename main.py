@@ -126,18 +126,17 @@ class Game:
         if event.button == 1:
             self.handle_left_click()
             self.dragging = True
-            self.drag_start = pg.mouse.get_pos()
+            self.drag_start = self.mouse_pos
         elif event.button in [4, 5]:
             self.adjust_zoom(event.button)
 
     def handle_left_click(self):
-        x, y = pg.mouse.get_pos()
-        clicked_entity = self.get_clicked_entity((x, y))
+        clicked_entity = self.get_clicked_entity(self.mouse_pos)
 
         if self.selected_player is None and self.is_player_turn(clicked_entity):
             self.select_player(clicked_entity)
         elif self.selected_player is not None:
-            if not self.selected_player.handle_click((x, y)):
+            if not self.selected_player.handle_click(self.mouse_pos):
                 self.selected_player = None
 
     def get_clicked_entity(self, mouse_pos):
@@ -189,13 +188,12 @@ class Game:
         Returns:
             None
         """
-        x, y = pg.mouse.get_pos()
-        hovered_entity = self.get_clicked_entity((x, y))
+        hovered_entity = self.get_clicked_entity(self.mouse_pos)
         self.selected_entity = hovered_entity if hovered_entity is not None else None
         if self.dragging:
-            dx, dy = x - self.drag_start[0], y - self.drag_start[1]
+            dx, dy = self.mouse_x - self.drag_start[0], self.mouse_y - self.drag_start[1]
             self.camera.move(-dx, -dy)
-            self.drag_start = (x, y)
+            self.drag_start = (self.mouse_x, self.mouse_y)
     
     def next_turn(self):
         """
@@ -244,7 +242,7 @@ class Game:
             None
         """
         while True:
-            self.mouse_pos = pg.mouse.get_pos()
+            self.mouse_pos = self.mouse_x, self.mouse_y = pg.mouse.get_pos()
             self.check_events()
             self.update()
             self.draw()
