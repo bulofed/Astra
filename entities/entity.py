@@ -89,23 +89,20 @@ class Entity():
         Returns:
             None
         """
-        if y > self.y:
-            self.orientation = 'down'
-            self.flip = False
-        elif y < self.y:
-            self.orientation = 'up'
-            self.flip = True
-        elif x < self.x:
-            self.orientation = 'up'
-            self.flip = False
-        elif x > self.x:
-            self.orientation = 'down'
-            self.flip = True
+        dx, dy = x - self.x, y - self.y
+        self.set_orientation(dx, dy)
         self.x, self.y, self.z = x, y, z
         
     def attack(self, target):
         dx, dy = target.x - self.x, target.y - self.y
-        print(dx, dy)
+        self.set_orientation(dx, dy)
+        self.animate_attack()
+        target.health -= self.damage
+        if target.health <= 0:
+            self.game.entities.remove(target)
+            self.game.check_game_over()
+            
+    def set_orientation(self, dx, dy):
         if dy > 0:
             self.orientation = 'down'
             self.flip = False
@@ -118,11 +115,6 @@ class Entity():
         elif dx > 0:
             self.orientation = 'down'
             self.flip = True
-        self.animate_attack()
-        target.health -= self.damage
-        if target.health <= 0:
-            self.game.entities.remove(target)
-            self.game.check_game_over()
             
     def animate_attack(self):
         self.state = 'attacking'
