@@ -1,4 +1,4 @@
-import itertools
+import itertools # used in child classes
 from abc import ABC, abstractmethod
 from game.settings import *
 import pygame as pg

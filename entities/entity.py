@@ -8,11 +8,15 @@ class Entity():
         self.game = game
         self.x, self.y, self.z = x, y, z
         self.state = 'idle'
+        self.orientation = 'down'
+        self.flip = False
         self.current_frame = 0
         self.animation_time = 0
         self.frame_duration = .5
-        self.idle_sprites = []
-        self.attack_sprites = []
+        self.idle_sprites_down = []
+        self.idle_sprites_up = []
+        self.attack_sprites_down = []
+        self.attack_sprites_up = []
         self.load_sprites()
         self.indicators_used= [AttackIndicator(game, self), MoveIndicator(game, self)]
         self.speed = 1 # Default speed
@@ -24,11 +28,17 @@ class Entity():
     def load_sprites(self):
         parent_class_name = self.__class__.__bases__[0].__name__
         class_name = self.__class__.__name__
-        self.idle_sprites.extend(
+        self.idle_sprites_down.extend(
             pg.image.load(f'images/{parent_class_name}/{class_name}/idle_d{i}.png') for i in range(1, 3)
         )
-        self.attack_sprites.extend(
+        self.idle_sprites_up.extend(
+            pg.image.load(f'images/{parent_class_name}/{class_name}/idle_u{i}.png') for i in range(1, 3)
+        )
+        self.attack_sprites_down.extend(
             pg.image.load(f'images/{parent_class_name}/{class_name}/attack_d{i}.png') for i in range(1, 3)
+        )
+        self.attack_sprites_up.extend(
+            pg.image.load(f'images/{parent_class_name}/{class_name}/attack_u{i}.png') for i in range(1, 3)
         )
         
     def update(self):
@@ -36,18 +46,32 @@ class Entity():
         if self.animation_time >= self.frame_duration:
             self.animation_time -= self.frame_duration
             if self.state == "attacking":
-                self.current_frame = (self.current_frame + 1) % len(self.attack_sprites)
+                self.current_frame = (
+                    (self.current_frame + 1) % len(self.attack_sprites_down)
+                    if self.orientation == "down"
+                    else (self.current_frame + 1) % len(self.attack_sprites_up)
+                )
                 if self.current_frame == 0:
                     self.state = "idle"
+            elif self.orientation == "down":
+                self.current_frame = (self.current_frame + 1) % len(self.idle_sprites_down)
             else:
-                self.current_frame = (self.current_frame + 1) % len(self.idle_sprites)
+                self.current_frame = (self.current_frame + 1) % len(self.idle_sprites_up)
 
     def draw(self):
         self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         if self.state == "attacking":
-            sprite = self.attack_sprites[self.current_frame]
+            sprite = (
+                self.attack_sprites_down[self.current_frame]
+                if self.orientation == "down"
+                else self.attack_sprites_up[self.current_frame]
+            )
+        elif self.orientation == "down":
+            sprite = self.idle_sprites_down[self.current_frame]
         else:
-            sprite = self.idle_sprites[self.current_frame]
+            sprite = self.idle_sprites_up[self.current_frame]
+        if self.flip:
+            sprite = pg.transform.flip(sprite, True, False)
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
         self.entity_mask = pg.mask.from_surface(sprite_resized)
@@ -65,6 +89,15 @@ class Entity():
         Returns:
             None
         """
+        if y > self.y:
+            self.orientation = 'down'
+            self.flip = False
+        elif y < self.y:
+            self.orientation = 'up'
+            self.flip = True
+        elif x < self.x:
+            self.orientation = 'up'
+            self.flip = False
         self.x, self.y, self.z = x, y, z
         
     def attack(self, target):
