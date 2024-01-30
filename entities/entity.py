@@ -98,9 +98,26 @@ class Entity():
         elif x < self.x:
             self.orientation = 'up'
             self.flip = False
+        elif x > self.x:
+            self.orientation = 'down'
+            self.flip = True
         self.x, self.y, self.z = x, y, z
         
     def attack(self, target):
+        dx, dy = target.x - self.x, target.y - self.y
+        print(dx, dy)
+        if dy > 0:
+            self.orientation = 'down'
+            self.flip = False
+        elif dy < 0:
+            self.orientation = 'up'
+            self.flip = True
+        elif dx < 0:
+            self.orientation = 'up'
+            self.flip = False
+        elif dx > 0:
+            self.orientation = 'down'
+            self.flip = True
         self.animate_attack()
         target.health -= self.damage
         if target.health <= 0:
