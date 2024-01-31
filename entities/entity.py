@@ -1,6 +1,7 @@
 from game.settings import *
 from indicators.type.attackIndicator import  *
 from indicators.type.moveIndicator import *
+from inventory.inventory import *
 import pygame as pg
 
 class Entity():
@@ -19,6 +20,7 @@ class Entity():
         self.attack_u = []
         self.load_sprites()
         self.indicators_used = [AttackIndicator(game, self), MoveIndicator(game, self)]
+        self.inventory = Inventory()
         self.speed = 1 # Default speed
         self.range = 1 # Default range
         self.max_health = 20 # Default max health
@@ -145,4 +147,4 @@ class Entity():
         return any((x, y, z) in indicator.actions_positions for indicator in self.indicators_used)
     
     def get_info(self):
-        return f"Name: {self.__class__.__name__}\nHealth: {self.health}/{self.max_health}\nDamage: {self.damage}\nRange: {self.range}\nSpeed: {self.speed}"
+        return f"Name: {self.__class__.__name__}\nHealth: {self.health}/{self.max_health}\nDamage: {self.damage}\nRange: {self.range}\nSpeed: {self.speed}\nInventory: {self.inventory.get_items()}"
