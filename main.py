@@ -4,6 +4,8 @@ from game.settings import *
 from game.maps import *
 from game.camera import *
 from game.infopanel import *
+from entities.items.itemEntity import *
+from inventory.items.lifePotion import *
 from entities.players.type.swordman import *
 from entities.monsters.type.goblin import *
 
@@ -14,6 +16,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.delta = 1
         self.entities = []
+        self.items = []
         self.current_turn = 0
         self.new_game()
         self.camera = Camera()
@@ -45,6 +48,7 @@ class Game:
     def init_entities(self):
         self.entities.append(Swordman(self, 2, 2, 2))
         self.entities.append(Goblin(self, 0, 2, 2))
+        self.items.append(ItemEntity(self, 2, 0, 2, LifePotion()))
     
     def update(self):
         """
@@ -58,6 +62,8 @@ class Game:
         """
         for entity in self.entities:
             entity.update()
+        for item in self.items:
+            item.update()
         pg.display.flip()
         self.delta =  self.clock.tick(FPS)
         pg.display.set_caption(self.map.name)
@@ -77,6 +83,8 @@ class Game:
         self.map.draw(self.camera)
         for entity in self.entities:
             entity.draw()
+        for item in self.items:
+            item.draw()
         self.screen.blit(self.mouse, self.mouse_pos)
         self.info_panel.draw()
         
@@ -142,6 +150,12 @@ class Game:
     def get_clicked_entity(self, mouse_pos):
         return next(
             (entity for entity in self.entities if entity.is_clicked(mouse_pos)),
+            None,
+        )
+        
+    def get_item_entity_at(self, x, y, z):
+        return next(
+            (entity for entity in self.entities if isinstance(entity, ItemEntity) and entity.x == x and entity.y == y and entity.z == z),
             None,
         )
 
