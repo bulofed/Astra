@@ -1,23 +1,28 @@
 import random
 import json
+import numpy as np
+from scipy.spatial import Voronoi, voronoi_plot_2d
+
+def creer_points(taille):
+    return [(random.uniform(0, taille), random.uniform(0, taille)) for _ in range(taille)]
 
 def creer_matrice(taille, height, max_count):
+    points = creer_points(max_count)
+    vor = Voronoi(points)
+
     matrice_jeu = []
-    count = 0
-    for _ in range(taille):
+    for i in range(taille):
         ligne = []
-        for _ in range(taille):
-            if height == 0:
-                random_block = random.randint(1, 3)
-            else:
-                if count < max_count:
-                    random_block = 5
-                    count += 1
-                else:
-                    random_block = random.randint(1, 4)
-            ligne.append(random_block)
+        for j in range(taille):
+            region_index = voronoi_region_index(i, j, vor)
+            ligne.append(region_index + 1)
         matrice_jeu.append(ligne)
     return matrice_jeu
+
+def voronoi_region_index(x, y, vor):
+    point = np.array([x, y])
+    region_index = vor.point_region[np.argmin([np.linalg.norm(point - vor.vertices[i]) for i in vor.regions[vor.point_region[point]]])]
+    return region_index
 
 def creer_level(max_count):
     levels = []
@@ -33,7 +38,7 @@ def creer_map(max_count):
         level = creer_level(max_count)
         map_data = {"name": "Stage {}".format(i), "levels": level}
         maps.append(map_data)
-    return maps
+    return map_data
 
 taille = 10
 max_count = 25
