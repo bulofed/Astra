@@ -83,3 +83,9 @@ class Player(Entity):
     
     def can_attack(self, entity):
         return super().can_attack(entity, Player)
+    
+    def move(self, x, y, z):
+        super().move(x, y, z)
+        if item_entity := self.game.get_item_entity_at(x, y, z):
+            self.inventory.add_item(item_entity.item)
+            self.game.remove_entity(item_entity)

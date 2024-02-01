@@ -10,7 +10,7 @@ class Inventory:
 
     def list_items(self):
         for item in self.items:
-            print(f'Name: {item.name}, Description: {item.description}, Quantity: {item.quantity}')
+            print(f'Name: {item.name}, Description: {item.description}')
             
     def get_items(self):
-        return ', '.join(f'{item.name} (x{item.quantity})' for item in self.items)
+        return ', '.join(f'{item.name}' for item in self.items)
