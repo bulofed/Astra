@@ -85,6 +85,7 @@ class Game:
             entity.draw()
         for item in self.items:
             item.draw()
+        self.entities[self.current_turn].inventory.draw(self.screen)
         self.screen.blit(self.mouse, self.mouse_pos)
         self.info_panel.draw()
         
