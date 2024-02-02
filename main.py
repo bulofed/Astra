@@ -6,6 +6,7 @@ from game.camera import *
 from game.infopanel import *
 from game.itemtooltip import *
 from managers.entityManager import *
+from managers.itemManager import *
 from entities.items.itemEntity import *
 from inventory.items.lifePotion import *
 from entities.players.type.swordman import *
@@ -18,8 +19,8 @@ class Game:
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
         self.delta = 1
-        self.items = []
         self.entity_manager = EntityManager()
+        self.inventory_manager = ItemManager()
         self.new_game()
         self.camera = Camera()
         self.info_panel = InfoPanel(self, 20, 20, WIDTH, HEIGHT)
@@ -52,7 +53,7 @@ class Game:
     def init_entities(self):
         self.entity_manager.add_entity(Swordman(self, 2, 2, 2))
         self.entity_manager.add_entity(Goblin(self, 0, 2, 2))
-        self.items.append(ItemEntity(self, 2, 0, 2, LifePotion()))
+        self.inventory_manager.add_item(ItemEntity(self, 2, 0, 2, LifePotion()))
 
     def update(self):
         """
@@ -65,8 +66,7 @@ class Game:
             None
         """
         self.entity_manager.update_entities()
-        for item in self.items:
-            item.update(self.entity_manager.entities)
+        self.inventory_manager.update(self.entity_manager.entities)
         pg.display.flip()
         self.delta = self.clock.tick(FPS)
         pg.display.set_caption(self.map.name)
@@ -85,8 +85,7 @@ class Game:
         self.screen.fill('black')
         self.map.draw(self.camera)
         self.entity_manager.draw_entities()
-        for item in self.items:
-            item.draw()
+        self.inventory_manager.draw()
         self.entity_manager.current_entity.inventory.draw(self.screen)
         self.screen.blit(self.mouse, self.mouse_pos)
         self.info_panel.draw()
@@ -241,10 +240,9 @@ class Game:
 
         if not players:
             print("Game Over: All players have been eliminated.")
-            self.quit_game()
         elif not monsters:
             print("Victory: All monsters have been eliminated.")
-            self.quit_game()
+        self.quit_game()
 
     def run(self):
         """
