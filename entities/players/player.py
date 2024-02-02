@@ -49,7 +49,7 @@ class Player(Entity):
             indicator.draw()
         super().draw()
     
-    def show_actions(self):
+    def show_actions(self, entities):
         """
         Shows the available actions for the player.
 
@@ -60,9 +60,12 @@ class Player(Entity):
             None
         """
         for indicator in self.indicators_used:
-            indicator.search_actions()
+            if isinstance(indicator, MoveIndicator):
+                indicator.search_actions()
+            elif isinstance(indicator, AttackIndicator):
+                indicator.search_actions(entities)
     
-    def handle_click(self, mouse_pos):
+    def handle_click(self, entities, mouse_pos, camera):
         """
         Handles mouse click events.
 
@@ -75,9 +78,9 @@ class Player(Entity):
         """
         for indicator in self.indicators_used:
             if indicator.is_clicked(mouse_pos):
-                indicator.handle_click(mouse_pos)
+                indicator.handle_click(entities, mouse_pos)
                 indicator.actions_positions.clear()
-                self.game.next_turn()
+                self.game.entity_manager.next_turn(camera)
             else:
                 indicator.actions_positions.clear()
     

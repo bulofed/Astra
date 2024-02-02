@@ -122,7 +122,7 @@ class Map:
             return self.world_map[z][x][y]
         return None
     
-    def get_entity(self, x, y, z):
+    def get_entity(self, entities, x, y, z):
         """
         Retrieves the entity at the specified coordinates.
 
@@ -137,7 +137,7 @@ class Map:
         return next(
             (
                 entity
-                for entity in self.game.entities
+                for entity in entities
                 if entity.x == x and entity.y == y and entity.z == z
             ),
             None,

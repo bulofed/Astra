@@ -15,8 +15,8 @@ class ItemEntity(Entity):
         sprite_resized = pg.transform.scale(sprite, (int(16 * self.game.camera.zoom), int(16 * self.game.camera.zoom)))
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x + sprite_resized.get_width() // 2, self.y_iso - self.game.camera.y + sprite_resized.get_height() // 2))
     
-    def update(self):
-        for player in self.game.entities:
+    def update(self, entities):
+        for player in entities:
             if isinstance(player, Player) and player.x == self.x and player.y == self.y and player.z == self.z:
                 player.inventory.add_item(self.item)
                 self.game.items.remove(self)

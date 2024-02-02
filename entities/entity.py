@@ -88,13 +88,13 @@ class Entity():
         self.set_orientation(dx, dy)
         self.x, self.y, self.z = x, y, z
         
-    def attack(self, target):
+    def attack(self, entity_manager, target):
         dx, dy = target.x - self.x, target.y - self.y
         self.set_orientation(dx, dy)
         self.animate_attack()
         target.health -= self.damage
         if target.health <= 0:
-            self.game.entities.remove(target)
+            entity_manager.remove_entity(target)
             self.game.check_game_over()
             
     def set_orientation(self, dx, dy):

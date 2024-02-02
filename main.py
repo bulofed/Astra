@@ -5,6 +5,7 @@ from game.maps import *
 from game.camera import *
 from game.infopanel import *
 from game.itemtooltip import *
+from managers.entityManager import *
 from entities.items.itemEntity import *
 from inventory.items.lifePotion import *
 from entities.players.type.swordman import *
@@ -17,11 +18,9 @@ class Game:
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
         self.delta = 1
-        self.entities = []
         self.items = []
-        self.current_turn = 0
+        self.entity_manager = EntityManager()
         self.new_game()
-        self.current_entity = self.entities[self.current_turn]
         self.camera = Camera()
         self.info_panel = InfoPanel(self, 20, 20, WIDTH, HEIGHT)
         self.item_tooltip = ItemTooltip(self, 20, HEIGHT - INVENTORY_Y_OFFSET - FONT_SIZE*2)
@@ -43,6 +42,7 @@ class Game:
         self.mouse = pg.Surface((5, 5))
         self.set_mouse()
         self.init_entities()
+        self.entity_manager.current_entity = self.entity_manager.entities[self.entity_manager.current_turn]
 
     def set_mouse(self):
         pg.mouse.set_visible(False)
@@ -50,8 +50,8 @@ class Game:
         self.mouse_mask = pg.mask.from_surface(self.mouse)
 
     def init_entities(self):
-        self.entities.append(Swordman(self, 2, 2, 2))
-        self.entities.append(Goblin(self, 0, 2, 2))
+        self.entity_manager.add_entity(Swordman(self, 2, 2, 2))
+        self.entity_manager.add_entity(Goblin(self, 0, 2, 2))
         self.items.append(ItemEntity(self, 2, 0, 2, LifePotion()))
 
     def update(self):
@@ -64,10 +64,9 @@ class Game:
         Returns:
             None
         """
-        for entity in self.entities:
-            entity.update()
+        self.entity_manager.update_entities()
         for item in self.items:
-            item.update()
+            item.update(self.entity_manager.entities)
         pg.display.flip()
         self.delta = self.clock.tick(FPS)
         pg.display.set_caption(self.map.name)
@@ -85,11 +84,10 @@ class Game:
         """
         self.screen.fill('black')
         self.map.draw(self.camera)
-        for entity in self.entities:
-            entity.draw()
+        self.entity_manager.draw_entities()
         for item in self.items:
             item.draw()
-        self.current_entity.inventory.draw(self.screen)
+        self.entity_manager.current_entity.inventory.draw(self.screen)
         self.screen.blit(self.mouse, self.mouse_pos)
         self.info_panel.draw()
         self.item_tooltip.draw()
@@ -148,33 +146,33 @@ class Game:
         clicked_entity = self.get_clicked_entity(self.mouse_pos)
         
         if self.hovered_item is not None:
-            self.hovered_item.use(self.current_entity)
+            self.hovered_item.use(self.entity_manager.current_entity)
 
         if self.selected_player is None and self.is_player_turn(clicked_entity):
             self.select_player(clicked_entity)
         elif self.selected_player is not None:
-            if not self.selected_player.handle_click(self.mouse_pos):
+            if not self.selected_player.handle_click(self.entity_manager, self.mouse_pos, self.camera):
                 self.selected_player = None
 
     def get_clicked_entity(self, mouse_pos):
         return next(
-            (entity for entity in self.entities if entity.is_clicked(mouse_pos)),
+            (entity for entity in self.entity_manager.entities if entity.is_clicked(mouse_pos)),
             None,
         )
 
     def get_item_entity_at(self, x, y, z):
         return next(
-            (entity for entity in self.entities if isinstance(entity, ItemEntity)
+            (entity for entity in self.entity_manager.entities if isinstance(entity, ItemEntity)
              and entity.x == x and entity.y == y and entity.z == z),
             None,
         )
 
     def is_player_turn(self, entity):
-        return isinstance(entity, Player) and entity == self.current_entity
+        return isinstance(entity, Player) and entity == self.entity_manager.current_entity
 
     def select_player(self, player):
         self.selected_player = player
-        player.show_actions()
+        player.show_actions(self.entity_manager.entities)
 
     def adjust_zoom(self, button):
         """
@@ -215,7 +213,7 @@ class Game:
         hovered_entity = self.get_clicked_entity(self.mouse_pos)
         self.selected_entity = hovered_entity if hovered_entity is not None else None
         
-        self.hovered_item = self.current_entity.inventory.get_item_at(self.mouse_pos)
+        self.hovered_item = self.entity_manager.current_entity.inventory.get_item_at(self.mouse_pos)
         if self.hovered_item is not None:
             self.item_tooltip.update(self.hovered_item)
         else:
@@ -225,22 +223,6 @@ class Game:
             dx, dy = self.mouse_x - self.drag_start[0], self.mouse_y - self.drag_start[1]
             self.camera.move(-dx, -dy)
             self.drag_start = (self.mouse_x, self.mouse_y)
-
-    def next_turn(self):
-        """
-        Advances the turn.
-
-        Args:
-            None
-
-        Returns:
-            None
-        """
-        self.current_turn = (self.current_turn + 1) % len(self.entities)
-        current_entity = self.entities[self.current_turn]
-        current_entity.center_camera(self.camera)
-        if isinstance(current_entity, Monster):
-            current_entity.random_action()
 
     def check_game_over(self):
         """
@@ -253,9 +235,9 @@ class Game:
             None
         """
         players = [
-            entity for entity in self.entities if isinstance(entity, Player)]
+            entity for entity in self.entity_manager.entities if isinstance(entity, Player)]
         monsters = [
-            entity for entity in self.entities if isinstance(entity, Monster)]
+            entity for entity in self.entity_manager.entities if isinstance(entity, Monster)]
 
         if not players:
             print("Game Over: All players have been eliminated.")

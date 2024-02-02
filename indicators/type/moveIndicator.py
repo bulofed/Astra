@@ -18,5 +18,5 @@ class MoveIndicator(Indicator):
             if block and block.solid and not block_above and not self.entity.is_position_occupied(x, y, z):
                 self.actions_positions.append((x, y, z))
         
-    def handle_action(self, x, y, z):
+    def handle_action(self, entities, x, y, z):
         self.entity.move(x, y, z + 1)

@@ -12,7 +12,7 @@ class Indicator(ABC):
         self.actions_positions = []
 
     @abstractmethod
-    def search_actions(self, int):
+    def search_actions(self):
         pass
 
     def draw(self):
@@ -26,13 +26,13 @@ class Indicator(ABC):
     def handle_action(self, x, y, z):
         pass
 
-    def handle_click(self, mouse_pos):
+    def handle_click(self, entity_manager, mouse_pos):
         for x, y, z in self.actions_positions:
             x_iso, y_iso = self.game.map.calculate_isometric_position(x, y, z, self.game.camera.zoom)
             offset_x = mouse_pos[0] - (x_iso - self.game.camera.x)
             offset_y = mouse_pos[1] - (y_iso - self.game.camera.y)
             if self.indicator_mask.overlap_area(self.game.mouse_mask, (offset_x, offset_y)) > 0:
-                self.handle_action(x, y, z)
+                self.handle_action(entity_manager, x, y, z)
                 self.game.selected_player = None
     
     def is_clicked(self, mouse_pos):
