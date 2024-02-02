@@ -65,7 +65,7 @@ class Player(Entity):
             elif isinstance(indicator, AttackIndicator):
                 indicator.search_actions(entities)
     
-    def handle_click(self, entities, mouse_pos, camera):
+    def handle_click(self, mouse_handler, entity_manager, camera):
         """
         Handles mouse click events.
 
@@ -77,8 +77,8 @@ class Player(Entity):
             None
         """
         for indicator in self.indicators_used:
-            if indicator.is_clicked(mouse_pos):
-                indicator.handle_click(entities, mouse_pos)
+            if indicator.is_clicked(mouse_handler):
+                indicator.handle_click(entity_manager, mouse_handler)
                 indicator.actions_positions.clear()
                 self.game.entity_manager.next_turn(camera)
             else:
@@ -89,5 +89,5 @@ class Player(Entity):
     
     def move(self, x, y, z):
         super().move(x, y, z)
-        if item_entity := self.game.get_item_entity_at(x, y, z):
+        if item_entity := self.game.mouse_handler.get_item_entity_at(x, y, z):
             self.game.remove_entity(item_entity)

@@ -39,22 +39,39 @@ class Entity():
         self.animation_manager.update()
 
     def draw(self):
+        self.calculate_isometric_position()
+        sprite = self.get_sprite_based_on_state_and_orientation()
+        sprite = self.flip_sprite_if_needed(sprite)
+        sprite_resized = self.resize_sprite(sprite)
+        self.blit_sprite(sprite_resized)
+        self.create_mask_from_sprite(sprite_resized)
+
+    def calculate_isometric_position(self):
         self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
+
+    def get_sprite_based_on_state_and_orientation(self):
         if self.state == "attacking":
-            sprite = (
-                self.attack_d[self.animation_manager.current_frame]
-                if self.orientation == "down"
-                else self.attack_u[self.animation_manager.current_frame]
-            )
-        elif self.orientation == "down":
-            sprite = self.idle_d[self.animation_manager.current_frame]
+            return self.get_attack_sprite()
         else:
-            sprite = self.idle_u[self.animation_manager.current_frame]
-        if self.flip:
-            sprite = pg.transform.flip(sprite, True, False)
-        sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
-        self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
-        self.entity_mask = pg.mask.from_surface(sprite_resized)
+            return self.get_idle_sprite()
+
+    def get_attack_sprite(self):
+        return self.attack_d[self.animation_manager.current_frame] if self.orientation == "down" else self.attack_u[self.animation_manager.current_frame]
+
+    def get_idle_sprite(self):
+        return self.idle_d[self.animation_manager.current_frame] if self.orientation == "down" else self.idle_u[self.animation_manager.current_frame]
+
+    def flip_sprite_if_needed(self, sprite):
+        return pg.transform.flip(sprite, True, False) if self.flip else sprite
+
+    def resize_sprite(self, sprite):
+        return pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
+
+    def blit_sprite(self, sprite):
+        self.game.screen.blit(sprite, (self.x_iso - self.game.camera.x, self.y_iso - self.game.camera.y))
+
+    def create_mask_from_sprite(self, sprite):
+        self.entity_mask = pg.mask.from_surface(sprite)
         
     def move(self, x, y, z):
         """
@@ -100,9 +117,9 @@ class Entity():
         self.state = 'attacking'
         self.animation_manager.current_frame = 0
             
-    def is_clicked(self, mouse_pos):
+    def is_clicked(self, mouse_handler):
         if hasattr(self, 'entity_mask'):
-            return self.entity_mask.overlap(self.game.mouse_mask, (mouse_pos[0] - self.x_iso + self.game.camera.x, mouse_pos[1] - self.y_iso + self.game.camera.y)) != None
+            return self.entity_mask.overlap(mouse_handler.mouse_mask, (mouse_handler.mouse_x - self.x_iso + self.game.camera.x, mouse_handler.mouse_y - self.y_iso + self.game.camera.y)) != None
         else:
             return False
     
