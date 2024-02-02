@@ -37,6 +37,19 @@ class Inventory:
     def get_items(self):
         return ', '.join(f'{item.name} x{count}' for item, count in self.items.values())
     
+    def get_item_at(self, pos):
+        for i in range(MAX_ITEMS):
+            x = (WIDTH - self.box_rect.width * MAX_ITEMS - (MAX_ITEMS - 1) * SPACE_BETWEEN_ITEMS) // 2 + i * self.box_rect.width + i * SPACE_BETWEEN_ITEMS
+            y = INVENTORY_Y
+            rect = pg.Rect(x, y, self.box_rect.width, self.box_rect.height)
+            if rect.collidepoint(pos):
+                if i < len(self.items):
+                    item_name = list(self.items.keys())[i]
+                    return self.items[item_name][0]
+                else:
+                    return None
+        return None
+    
     def draw(self, screen):
         """
         Draws the inventory on the screen.
@@ -66,3 +79,6 @@ class Inventory:
                 count_x = x + self.box_rect.width - text.get_width() - ITEM_COUNT_OFFSET
                 count_y = INVENTORY_Y + self.box_rect.height - text.get_height() - ITEM_COUNT_OFFSET
                 screen.blit(text, (count_x, count_y))
+                
+    def update(self):
+        pass

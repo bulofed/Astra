@@ -4,10 +4,12 @@ from game.settings import *
 from game.maps import *
 from game.camera import *
 from game.infopanel import *
+from game.itemtooltip import *
 from entities.items.itemEntity import *
 from inventory.items.lifePotion import *
 from entities.players.type.swordman import *
 from entities.monsters.type.goblin import *
+
 
 class Game:
     def __init__(self):
@@ -19,12 +21,14 @@ class Game:
         self.items = []
         self.current_turn = 0
         self.new_game()
+        self.current_entity = self.entities[self.current_turn]
         self.camera = Camera()
-        self.info_panel = InfoPanel(self, 0, 0, WIDTH, HEIGHT)
+        self.info_panel = InfoPanel(self, 20, 20, WIDTH, HEIGHT)
+        self.item_tooltip = ItemTooltip(self, 20, HEIGHT - INVENTORY_Y_OFFSET - FONT_SIZE*2)
         self.dragging = False
         self.selected_player = None
         self.selected_entity = None
-     
+
     def new_game(self):
         """
         Starts a new game by initializing the map and player.
@@ -39,17 +43,17 @@ class Game:
         self.mouse = pg.Surface((5, 5))
         self.set_mouse()
         self.init_entities()
-    
+
     def set_mouse(self):
         pg.mouse.set_visible(False)
         self.mouse.fill('red')
         self.mouse_mask = pg.mask.from_surface(self.mouse)
-    
+
     def init_entities(self):
         self.entities.append(Swordman(self, 2, 2, 2))
         self.entities.append(Goblin(self, 0, 2, 2))
         self.items.append(ItemEntity(self, 2, 0, 2, LifePotion()))
-    
+
     def update(self):
         """
         Updates the game state.
@@ -65,10 +69,10 @@ class Game:
         for item in self.items:
             item.update()
         pg.display.flip()
-        self.delta =  self.clock.tick(FPS)
+        self.delta = self.clock.tick(FPS)
         pg.display.set_caption(self.map.name)
         self.info_panel.update(self.selected_entity)
-        
+
     def draw(self):
         """
         Draws the game on the screen.
@@ -85,10 +89,11 @@ class Game:
             entity.draw()
         for item in self.items:
             item.draw()
-        self.entities[self.current_turn].inventory.draw(self.screen)
+        self.current_entity.inventory.draw(self.screen)
         self.screen.blit(self.mouse, self.mouse_pos)
         self.info_panel.draw()
-        
+        self.item_tooltip.draw()
+
     def check_events(self):
         """
         Checks for and handles game events.
@@ -141,6 +146,9 @@ class Game:
 
     def handle_left_click(self):
         clicked_entity = self.get_clicked_entity(self.mouse_pos)
+        
+        if self.hovered_item is not None:
+            self.hovered_item.use(self.current_entity)
 
         if self.selected_player is None and self.is_player_turn(clicked_entity):
             self.select_player(clicked_entity)
@@ -153,15 +161,16 @@ class Game:
             (entity for entity in self.entities if entity.is_clicked(mouse_pos)),
             None,
         )
-        
+
     def get_item_entity_at(self, x, y, z):
         return next(
-            (entity for entity in self.entities if isinstance(entity, ItemEntity) and entity.x == x and entity.y == y and entity.z == z),
+            (entity for entity in self.entities if isinstance(entity, ItemEntity)
+             and entity.x == x and entity.y == y and entity.z == z),
             None,
         )
 
     def is_player_turn(self, entity):
-        return isinstance(entity, Player) and entity == self.entities[self.current_turn]
+        return isinstance(entity, Player) and entity == self.current_entity
 
     def select_player(self, player):
         self.selected_player = player
@@ -205,11 +214,18 @@ class Game:
         """
         hovered_entity = self.get_clicked_entity(self.mouse_pos)
         self.selected_entity = hovered_entity if hovered_entity is not None else None
+        
+        self.hovered_item = self.current_entity.inventory.get_item_at(self.mouse_pos)
+        if self.hovered_item is not None:
+            self.item_tooltip.update(self.hovered_item)
+        else:
+            self.item_tooltip.update(None)
+        
         if self.dragging:
             dx, dy = self.mouse_x - self.drag_start[0], self.mouse_y - self.drag_start[1]
             self.camera.move(-dx, -dy)
             self.drag_start = (self.mouse_x, self.mouse_y)
-    
+
     def next_turn(self):
         """
         Advances the turn.
@@ -225,7 +241,7 @@ class Game:
         current_entity.center_camera(self.camera)
         if isinstance(current_entity, Monster):
             current_entity.random_action()
-    
+
     def check_game_over(self):
         """
         Checks if the game is over.
@@ -236,8 +252,10 @@ class Game:
         Returns:
             None
         """
-        players = [entity for entity in self.entities if isinstance(entity, Player)]
-        monsters = [entity for entity in self.entities if isinstance(entity, Monster)]
+        players = [
+            entity for entity in self.entities if isinstance(entity, Player)]
+        monsters = [
+            entity for entity in self.entities if isinstance(entity, Monster)]
 
         if not players:
             print("Game Over: All players have been eliminated.")
@@ -245,7 +263,7 @@ class Game:
         elif not monsters:
             print("Victory: All monsters have been eliminated.")
             self.quit_game()
-        
+
     def run(self):
         """
         Runs the game loop.
@@ -261,7 +279,8 @@ class Game:
             self.check_events()
             self.update()
             self.draw()
-            
+
+
 if __name__ == '__main__':
     game = Game()
     game.run()
