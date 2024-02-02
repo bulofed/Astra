@@ -1,4 +1,5 @@
 from game.settings import *
+from managers.animationManager import *
 from indicators.type.attackIndicator import  *
 from indicators.type.moveIndicator import *
 from inventory.inventory import *
@@ -11,14 +12,12 @@ class Entity():
         self.state = 'idle'
         self.orientation = 'down'
         self.flip = False
-        self.current_frame = 0
-        self.animation_time = 0
-        self.frame_duration = .5
         self.idle_d = []
         self.idle_u = []
         self.attack_d = []
         self.attack_u = []
         self.load_sprites()
+        self.animation_manager = AnimationManager(self)
         self.indicators_used = [AttackIndicator(game, self), MoveIndicator(game, self)]
         self.inventory = Inventory()
         self.speed = 1 # Default speed
@@ -37,34 +36,20 @@ class Entity():
             )
         
     def update(self):
-        self.animation_time += self.game.delta / 1000
-        if self.animation_time >= self.frame_duration:
-            self.animation_time -= self.frame_duration
-            if self.state == "attacking":
-                self.current_frame = (
-                    (self.current_frame + 1) % len(self.attack_d)
-                    if self.orientation == "down"
-                    else (self.current_frame + 1) % len(self.attack_u)
-                )
-                if self.current_frame == 0:
-                    self.state = "idle"
-            elif self.orientation == "down":
-                self.current_frame = (self.current_frame + 1) % len(self.idle_d)
-            else:
-                self.current_frame = (self.current_frame + 1) % len(self.idle_u)
+        self.animation_manager.update()
 
     def draw(self):
         self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         if self.state == "attacking":
             sprite = (
-                self.attack_d[self.current_frame]
+                self.attack_d[self.animation_manager.current_frame]
                 if self.orientation == "down"
-                else self.attack_u[self.current_frame]
+                else self.attack_u[self.animation_manager.current_frame]
             )
         elif self.orientation == "down":
-            sprite = self.idle_d[self.current_frame]
+            sprite = self.idle_d[self.animation_manager.current_frame]
         else:
-            sprite = self.idle_u[self.current_frame]
+            sprite = self.idle_u[self.animation_manager.current_frame]
         if self.flip:
             sprite = pg.transform.flip(sprite, True, False)
         sprite_resized = pg.transform.scale(sprite, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
@@ -113,7 +98,7 @@ class Entity():
             
     def animate_attack(self):
         self.state = 'attacking'
-        self.current_frame = 0
+        self.animation_manager.current_frame = 0
             
     def is_clicked(self, mouse_pos):
         if hasattr(self, 'entity_mask'):
@@ -148,3 +133,6 @@ class Entity():
     
     def get_info(self):
         return f"Name: {self.__class__.__name__}\nHealth: {self.health}/{self.max_health}\nDamage: {self.damage}\nRange: {self.range}\nSpeed: {self.speed}\nInventory: {self.inventory.get_items()}"
+    
+    def random_action(self, entity_manager):
+        pass

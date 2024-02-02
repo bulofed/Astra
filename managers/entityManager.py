@@ -1,4 +1,4 @@
-from entities.monsters.monster import *
+from entities.entity import Entity
 
 class EntityManager():
     def __init__(self):
@@ -7,9 +7,13 @@ class EntityManager():
         self.current_entity = None
         
     def add_entity(self, entity):
+        if not isinstance(entity, Entity):
+            raise ValueError("Invalid entity. Entity must be an instance of Entity class.")
         self.entities.append(entity)
         
     def remove_entity(self, entity):
+        if not isinstance(entity, Entity):
+            raise ValueError("Invalid entity. Entity must be an instance of Entity class.")
         self.entities.remove(entity)
         
     def update_entities(self):
@@ -24,5 +28,4 @@ class EntityManager():
         self.current_turn = (self.current_turn + 1) % len(self.entities)
         self.current_entity = self.entities[self.current_turn]
         self.current_entity.center_camera(camera)
-        if isinstance(self.current_entity, Monster):
-            self.current_entity.random_action(self)
+        self.current_entity.random_action(self)
