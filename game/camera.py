@@ -13,9 +13,6 @@ class Camera:
         Args:
             dx: The amount to move the camera along the x-axis.
             dy: The amount to move the camera along the y-axis.
-
-        Returns:
-            None
         """
         self.x += dx
         self.y += dy

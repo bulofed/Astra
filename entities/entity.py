@@ -1,5 +1,4 @@
 from game.settings import *
-from game.utils import calculate_isometric_position
 from managers.animationManager import *
 from .animated_sprite_manager import AnimatedSpriteManager
 from .idle_sprite_manager import ItemSpriteManager
@@ -86,3 +85,7 @@ class Entity():
     
     def random_action(self, _):
         pass
+    
+    def heal(self, amount):
+        self.health += amount
+        self.health = min(self.health, self.max_health)

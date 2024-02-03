@@ -40,11 +40,20 @@ class Indicator(ABC):
                 action(position)
 
     def draw(self):
-        def action(position):
-            indicator_resized = pg.transform.scale(self.indicator, (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom)))
-            self.game.screen.blit(indicator_resized, (position.x_iso - self.game.camera.x, position.y_iso - self.game.camera.y))
-            self.indicator_mask = pg.mask.from_surface(indicator_resized)
-        self._iterate_actions_positions(None, action)
+        indicator_resized = pg.transform.scale(
+            self.indicator,
+            (int(SPRITE_WIDTH * self.game.camera.zoom), int(SPRITE_HEIGHT * self.game.camera.zoom))
+        )
+        self.indicator_mask = pg.mask.from_surface(indicator_resized)
+        
+        def blit_indicator(position):
+            self.game.screen.blit(
+                indicator_resized,
+                (position.x_iso - self.game.camera.x, position.y_iso - self.game.camera.y)
+            )
+    
+        self._iterate_actions_positions(None, blit_indicator)
+
             
     @abstractmethod
     def handle_action(self, x, y, z):
@@ -55,11 +64,3 @@ class Indicator(ABC):
             self.handle_action(entity_manager, position.x, position.y, position.z)
         self._iterate_actions_positions(mouse_handler, action)
         self.game.selected_player = None
-    
-    def is_clicked(self, mouse_handler):
-        clicked = False
-        def action(_):
-            nonlocal clicked
-            clicked = True
-        self._iterate_actions_positions(mouse_handler, action)
-        return clicked

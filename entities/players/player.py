@@ -2,20 +2,8 @@ from game.settings import *
 from entities.entity import *
 
 class Player(Entity):
-
-    def __init__(self, game, x, y, z):
-        super().__init__(game, x, y, z)     
     
     def show_actions(self, entities):
-        """
-        Shows the available actions for the player.
-
-        Args:
-            self: The player instance.
-
-        Returns:
-            None
-        """
         for indicator in self.indicators_used:
             if isinstance(indicator, MoveIndicator):
                 indicator.search_actions()

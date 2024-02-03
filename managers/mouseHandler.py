@@ -62,15 +62,6 @@ class MouseHandler:
                 self.selected_player = None
                 
     def handle_mouse_button_up(self, event):
-        """
-        Handles mouse button up events.
-
-        Args:
-            event: The mouse button up event.
-
-        Returns:
-            None
-        """
         if event.button == 1:
             self.dragging = False
             
@@ -90,15 +81,6 @@ class MouseHandler:
             self.drag_start = (self.mouse_x, self.mouse_y)
             
     def adjust_zoom(self, button):
-        """
-        Adjusts the zoom level of the camera.
-
-        Args:
-            button: The mouse button that was clicked.
-
-        Returns:
-            None
-        """
         zoom_adjustment = .5 if button == 4 else -.5
         self.game.camera.set_zoom(self.game.camera.zoom + zoom_adjustment)
                 

@@ -8,6 +8,24 @@ class Inventory:
         self.box_resized = pg.transform.scale(box_image, (INVENTORY_SLOT_WIDTH, INVENTORY_SLOT_HEIGHT))
         self.box_rect = self.box_resized.get_rect()
         self.font = pg.font.SysFont(None, 32)
+        total_width = self.box_rect.width * MAX_ITEMS
+        total_spacing = (MAX_ITEMS - 1) * SPACE_BETWEEN_ITEMS
+        self.initial_offset = (WIDTH - total_width - total_spacing) // 2
+
+    def _calculate_position(self, index, item_resized=None):
+        item_offset = index * (self.box_rect.width + SPACE_BETWEEN_ITEMS)
+
+        x = self.initial_offset + item_offset
+        y = INVENTORY_Y
+
+        if item_resized:
+            item_width_offset = (self.box_rect.width - item_resized.get_width()) // 2
+            item_height_offset = (self.box_rect.height - item_resized.get_height()) // 2
+
+            x += item_width_offset
+            y += item_height_offset
+
+        return x, y
 
     def add_item(self, item):
         if len(self.items) >= MAX_ITEMS:
@@ -17,7 +35,7 @@ class Inventory:
         else:
             item, count = self.items[item.name]
             self.items[item.name] = (item, count + 1)
-            
+
     def use_item(self, item):
         if item.name in self.items:
             item, count = self.items[item.name]
@@ -31,54 +49,56 @@ class Inventory:
         self.items.pop(item.name)
 
     def list_items(self):
-        for item in self.items:
-            print(f'Name: {item.name}, Description: {item.description}')
-            
+        return (f'Name: {item.name}, Description: {item.description}' for item in self.items.values())
+
     def get_items(self):
-        return ', '.join(f'{item.name} x{count}' for item, count in self.items.values())
-    
+        return ', '.join([f'{item.name} x{count}' for item, count in self.items.values()])
+
     def get_item_at(self, pos):
-        for i in range(MAX_ITEMS):
-            x = (WIDTH - self.box_rect.width * MAX_ITEMS - (MAX_ITEMS - 1) * SPACE_BETWEEN_ITEMS) // 2 + i * self.box_rect.width + i * SPACE_BETWEEN_ITEMS
-            y = INVENTORY_Y
+        for i, item_name in enumerate(self.items.keys()):
+            x, y = self._calculate_position(i)
             rect = pg.Rect(x, y, self.box_rect.width, self.box_rect.height)
             if rect.collidepoint(pos):
-                if i < len(self.items):
-                    item_name = list(self.items.keys())[i]
-                    return self.items[item_name][0]
-                else:
-                    return None
+                return self.items[item_name][0]
         return None
-    
+
     def draw(self, screen):
-        """
-        Draws the inventory on the screen.
+        pre_scaled_sprites = self._pre_scale_sprites()
+        pre_rendered_counts = self._pre_render_counts()
 
-        Args:
-            screen: The surface to draw the inventory on.
-
-        Returns:
-            None
-        """
-        inventory_width = self.box_rect.width * MAX_ITEMS + (MAX_ITEMS - 1) * SPACE_BETWEEN_ITEMS
-        start_x = (WIDTH - inventory_width) // 2
-        
         for i in range(MAX_ITEMS):
-            x = start_x + i * self.box_rect.width + i * SPACE_BETWEEN_ITEMS
-            
-            screen.blit(self.box_resized, (x, INVENTORY_Y))
-            
+            x, y = self._calculate_position(i)
+            screen.blit(self.box_resized, (x, y))
+
             if i < len(self.items):
                 item_name = list(self.items.keys())[i]
-                item, count = self.items[item_name]
-                item_resized = pg.transform.scale(item.sprite, (ITEM_SLOT_WIDTH, ITEM_SLOT_HEIGHT))
-                item_x = x + (self.box_rect.width - item_resized.get_width()) // 2
-                item_y = INVENTORY_Y + (self.box_rect.height - item_resized.get_height()) // 2
-                screen.blit(item_resized, (item_x, item_y))
-                text = self.font.render(f'x{count}', True, WHITE)
-                count_x = x + self.box_rect.width - text.get_width() - ITEM_COUNT_OFFSET
-                count_y = INVENTORY_Y + self.box_rect.height - text.get_height() - ITEM_COUNT_OFFSET
-                screen.blit(text, (count_x, count_y))
-                
-    def update(self):
-        pass
+                _, count = self.items[item_name]
+                self._draw_item(screen, item_name, count, i, pre_scaled_sprites, pre_rendered_counts)
+
+    def _pre_scale_sprites(self):
+        return {
+            item_name: pg.transform.scale(item.sprite, (ITEM_SLOT_WIDTH, ITEM_SLOT_HEIGHT))
+            for item_name, (item, _) in self.items.items()
+        }
+
+    def _pre_render_counts(self):
+        return {
+            count: self.font.render(f'x{count}', True, WHITE)
+            for _, count in self.items.values()
+        }
+
+    def _draw_item(self, screen, item_name, count, i, pre_scaled_sprites, pre_rendered_counts):
+        item_resized = pre_scaled_sprites[item_name]
+        item_x, item_y = self._calculate_position(i, item_resized)
+        screen.blit(item_resized, (item_x, item_y))
+        text = pre_rendered_counts[count]
+        count_x, count_y = self._calculate_count_position(i, text)
+        screen.blit(text, (count_x, count_y))
+
+    def _calculate_count_position(self, i, text):
+        item_offset = i * (self.box_rect.width + SPACE_BETWEEN_ITEMS)
+        text_offset = self.box_rect.width - text.get_width() - 10
+
+        count_x = self.initial_offset + item_offset + text_offset
+        count_y = INVENTORY_Y + self.box_rect.height - text.get_height() - 10
+        return count_x, count_y

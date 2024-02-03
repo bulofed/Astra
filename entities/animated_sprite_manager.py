@@ -6,16 +6,16 @@ import pygame as pg
 class AnimatedSpriteManager(SpriteManager):
     def __init__(self, entity):
         super().__init__(entity)
-        self.idle_d = []
-        self.idle_u = []
-        self.attack_d = []
-        self.attack_u = []
+        self.idle_down = []
+        self.idle_up = []
+        self.attack_down = []
+        self.attack_up = []
         self.load_sprite()
 
     def load_sprite(self):
         parent_class_name = self.entity.__class__.__bases__[0].__name__
         class_name = self.entity.__class__.__name__
-        sprite_lists = ['idle_d', 'idle_u', 'attack_d', 'attack_u']
+        sprite_lists = ['idle_down', 'idle_up', 'attack_down', 'attack_up']
         for sprite_list in sprite_lists:
             getattr(self, sprite_list).extend(
                 pg.image.load(f'images/{parent_class_name}/{class_name}/{sprite_list}{i}.png') for i in range(1, 3)
@@ -38,10 +38,10 @@ class AnimatedSpriteManager(SpriteManager):
             return self.get_idle_sprite()
 
     def get_attack_sprite(self):
-        return self.attack_d[self.entity.animation_manager.current_frame] if self.entity.orientation == "down" else self.attack_u[self.entity.animation_manager.current_frame]
+        return self.attack_down[self.entity.animation_manager.current_frame] if self.entity.orientation == "down" else self.attack_up[self.entity.animation_manager.current_frame]
 
     def get_idle_sprite(self):
-        return self.idle_d[self.entity.animation_manager.current_frame] if self.entity.orientation == "down" else self.idle_u[self.entity.animation_manager.current_frame]
+        return self.idle_down[self.entity.animation_manager.current_frame] if self.entity.orientation == "down" else self.idle_up[self.entity.animation_manager.current_frame]
 
     def flip_sprite_if_needed(self, sprite):
         return pg.transform.flip(sprite, True, False) if self.entity.flip else sprite

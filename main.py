@@ -29,6 +29,7 @@ class Game:
         self.map = Map(self)
         self.mouse_handler.set_mouse()
         self.init_entities()
+        pg.display.set_caption(self.map.name)
 
     def init_entities(self):
         self.entity_manager.add(Swordman(self, 2, 2, 2))
@@ -40,7 +41,6 @@ class Game:
         self.inventory_manager.update(self.entity_manager.entities)
         pg.display.flip()
         self.delta = self.clock.tick(FPS)
-        pg.display.set_caption(self.map.name)
 
     def draw(self):
         self.screen.fill('black')
