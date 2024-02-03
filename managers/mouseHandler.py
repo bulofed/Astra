@@ -104,9 +104,15 @@ class MouseHandler:
                 
     def get_clicked_entity(self):
         return next(
-            (entity for entity in self.entity_manager.entities if entity.is_clicked(self)),
+            (entity for entity in self.entity_manager.entities if self.is_entity_clicked(entity)),
             None,
         )
+
+    def is_entity_clicked(self, entity):
+        if isinstance(entity, Player) and hasattr(entity, 'entity_mask'):
+            return entity.entity_mask.overlap(self.mouse_mask, (self.mouse_x - entity.sprite_manager.x_iso + self.game.camera.x, self.mouse_y - entity.sprite_manager.y_iso + self.game.camera.y)) != None
+        else:
+            return False
         
     def select_player(self, player):
         self.selected_player = player

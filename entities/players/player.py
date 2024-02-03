@@ -23,23 +23,10 @@ class Player(Entity):
                 indicator.search_actions(entities)
     
     def handle_click(self, mouse_handler, entity_manager, camera):
-        """
-        Handles mouse click events.
-
-        Args:
-            self: The player instance.
-            mouse_pos: The position of the mouse cursor.
-
-        Returns:
-            None
-        """
         for indicator in self.indicators_used:
-            if indicator.is_clicked(mouse_handler):
-                indicator.handle_click(entity_manager, mouse_handler)
-                indicator.actions_positions.clear()
-                self.game.game_logic.next_turn(camera)
-            else:
-                indicator.actions_positions.clear()
+            indicator.handle_click(entity_manager, mouse_handler)
+            indicator.actions_positions.clear()
+        self.game.game_logic.next_turn(camera)
     
     def can_attack(self, entity):
         return super().can_attack(entity, Player)
