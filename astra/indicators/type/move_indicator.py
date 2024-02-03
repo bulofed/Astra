@@ -1,5 +1,4 @@
-from astra.indicators.indicator import Indicator
-import pygame as pg
+from astra.indicators.indicator import Indicator, pg
 import itertools
 
 class MoveIndicator(Indicator):

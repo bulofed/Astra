@@ -1,5 +1,4 @@
-from .sprite_manager import SpriteManager
-import pygame as pg
+from .sprite_manager import SpriteManager, pg
 
 class ItemSpriteManager(SpriteManager):
     def load_sprite(self):

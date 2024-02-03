@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import pygame as pg # used in inherited classes
 
 class SpriteManager(ABC):
     def __init__(self, entity):

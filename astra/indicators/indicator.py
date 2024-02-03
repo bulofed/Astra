@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from astra.game.common.settings import SPRITE_WIDTH, SPRITE_HEIGHT
 from astra.game.common.utils import calculate_isometric_position
-from astra.game.position import Position
+from astra.game.common.position import Position
 import pygame as pg
 
 class Indicator(ABC):

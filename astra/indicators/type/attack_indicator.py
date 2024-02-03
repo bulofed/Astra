@@ -1,6 +1,5 @@
-from astra.indicators.indicator import Indicator
+from astra.indicators.indicator import Indicator, pg
 from astra.game.common.utils import get_entity
-import pygame as pg
 
 class AttackIndicator(Indicator):
     def __init__(self, game, entity):
