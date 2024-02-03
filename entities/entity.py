@@ -29,14 +29,6 @@ class Entity():
         
     def update(self):
         self.animation_manager.update()
-
-    def draw(self):
-        self.x_iso, self.y_iso = calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
-        sprite = self.sprite_manager.get_sprite_based_on_state_and_orientation()
-        sprite = self.sprite_manager.flip_sprite_if_needed(sprite)
-        sprite_resized = self.sprite_manager.resize_sprite(sprite)
-        self.sprite_manager.blit_sprite(sprite_resized)
-        self.sprite_manager.create_mask_from_sprite(sprite_resized)
         
     def move(self, x, y, z):
         dx, dy = x - self.x, y - self.y
@@ -72,13 +64,13 @@ class Entity():
             
     def is_clicked(self, mouse_handler):
         if hasattr(self, 'entity_mask'):
-            return self.entity_mask.overlap(mouse_handler.mouse_mask, (mouse_handler.mouse_x - self.x_iso + self.game.camera.x, mouse_handler.mouse_y - self.y_iso + self.game.camera.y)) != None
+            return self.entity_mask.overlap(mouse_handler.mouse_mask, (mouse_handler.mouse_x - self.sprite_manager.x_iso + self.game.camera.x, mouse_handler.mouse_y - self.sprite_manager.y_iso + self.game.camera.y)) != None
         else:
             return False
     
     def center_camera(self, camera):
-        camera.x = self.x_iso - WIDTH/2 + SPRITE_WIDTH/2 * camera.zoom
-        camera.y = self.y_iso - HEIGHT/2 + SPRITE_HEIGHT/2 * camera.zoom
+        camera.x = self.sprite_manager.x_iso - WIDTH/2 + SPRITE_WIDTH/2 * camera.zoom
+        camera.y = self.sprite_manager.y_iso - HEIGHT/2 + SPRITE_HEIGHT/2 * camera.zoom
         
     def can_attack(self, entity, target_type):
         if isinstance(entity, target_type):

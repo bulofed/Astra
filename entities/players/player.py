@@ -5,20 +5,6 @@ class Player(Entity):
 
     def __init__(self, game, x, y, z):
         super().__init__(game, x, y, z)     
-            
-    def draw(self):
-        """
-        Draws the player on the game screen.
-
-        Args:
-            self: The player instance.
-
-        Returns:
-            None
-        """
-        for indicator in self.indicators_used:
-            indicator.draw()
-        super().draw()
     
     def show_actions(self, entities):
         """

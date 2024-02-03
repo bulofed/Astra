@@ -1,5 +1,6 @@
 from managers.manager import Manager
 
 class EntityManager(Manager):
-    def __init__(self):
-        super().__init__()
+    def draw(self):
+        for entity in self.entities:
+            entity.sprite_manager.draw()
