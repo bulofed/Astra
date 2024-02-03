@@ -1,9 +1,9 @@
 import random as rd
-from astra.entities.entity import Entity, MoveIndicator, AttackIndicator
+from astra.entities.type.animated_entity import AnimatedEntity
+from astra.indicators.type.attack_indicator import AttackIndicator
+from astra.indicators.type.move_indicator import MoveIndicator
 
-class Monster(Entity):
-    def __init__(self, game, x, y, z):
-        super().__init__(game, x, y, z)
+class Monster(AnimatedEntity):
         
     def random_action(self, entity_manager):
         for indicator in self.indicators_used:

@@ -1,11 +1,11 @@
 import pygame as pg
 from astra.game.common.utils import calculate_isometric_position
-from astra.entities.entity import Entity
+from astra.entities.type.idle_entity import IdleEntity
 from astra.entities.players.player import Player
 
-class ItemEntity(Entity):
+class ItemEntity(IdleEntity):
     def __init__(self, game, x, y, z, item):
-        super().__init__(game, x, y, z, is_item=True)
+        super().__init__(game, x, y, z)
         self.item = item
     
     def draw(self):

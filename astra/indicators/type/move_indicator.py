@@ -12,8 +12,8 @@ class MoveIndicator(Indicator):
             self._check_and_append_position(dx, dy, dz)
 
     def _get_position_range(self):
-        return itertools.product(range(-self.entity.speed, self.entity.speed + 1), 
-                                range(-self.entity.speed, self.entity.speed + 1), 
+        return itertools.product(range(-self.entity.properties.speed, self.entity.properties.speed + 1), 
+                                range(-self.entity.properties.speed, self.entity.properties.speed + 1), 
                                 range(-1, 2))
 
     def _check_and_append_position(self, dx, dy, dz):
