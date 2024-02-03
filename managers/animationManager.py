@@ -11,13 +11,13 @@ class AnimationManager:
             self.animation_time -= self.frame_duration
             if self.entity.state == "attacking":
                 self.current_frame = (
-                    (self.current_frame + 1) % len(self.entity.attack_d)
+                    (self.current_frame + 1) % len(self.entity.sprite_manager.attack_d)
                     if self.entity.orientation == "down"
-                    else (self.current_frame + 1) % len(self.entity.attack_u)
+                    else (self.current_frame + 1) % len(self.entity.sprite_manager.attack_u)
                 )
                 if self.current_frame == 0:
                     self.entity.state = "idle"
             elif self.entity.orientation == "down":
-                self.current_frame = (self.current_frame + 1) % len(self.entity.idle_d)
+                self.current_frame = (self.current_frame + 1) % len(self.entity.sprite_manager.idle_d)
             else:
-                self.current_frame = (self.current_frame + 1) % len(self.entity.idle_u)
+                self.current_frame = (self.current_frame + 1) % len(self.entity.sprite_manager.idle_u)

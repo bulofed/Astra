@@ -3,11 +3,8 @@ from entities.players.player import *
 
 class ItemEntity(Entity):
     def __init__(self, game, x, y, z, item):
-        super().__init__(game, x, y, z)
+        super().__init__(game, x, y, z, is_item=True)
         self.item = item
-        
-    def load_sprites(self):
-        pass
     
     def draw(self):
         self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
