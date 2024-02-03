@@ -1,5 +1,6 @@
 from entities.monsters.monster import Monster
 from entities.players.player import Player
+from game.settings import *
 
 class GameLogic:
     def __init__(self, entity_manager):

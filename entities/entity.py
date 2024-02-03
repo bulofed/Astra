@@ -1,4 +1,5 @@
 from game.settings import *
+from game.utils import calculate_isometric_position
 from managers.animationManager import *
 from .animated_sprite_manager import AnimatedSpriteManager
 from .idle_sprite_manager import ItemSpriteManager
@@ -30,15 +31,12 @@ class Entity():
         self.animation_manager.update()
 
     def draw(self):
-        self.calculate_isometric_position()
+        self.x_iso, self.y_iso = calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         sprite = self.sprite_manager.get_sprite_based_on_state_and_orientation()
         sprite = self.sprite_manager.flip_sprite_if_needed(sprite)
         sprite_resized = self.sprite_manager.resize_sprite(sprite)
         self.sprite_manager.blit_sprite(sprite_resized)
         self.sprite_manager.create_mask_from_sprite(sprite_resized)
-
-    def calculate_isometric_position(self):
-        self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         
     def move(self, x, y, z):
         dx, dy = x - self.x, y - self.y

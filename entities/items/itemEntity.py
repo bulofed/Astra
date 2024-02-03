@@ -1,3 +1,4 @@
+from game.utils import calculate_isometric_position
 from entities.entity import *
 from entities.players.player import *
 
@@ -7,7 +8,7 @@ class ItemEntity(Entity):
         self.item = item
     
     def draw(self):
-        self.x_iso, self.y_iso = self.game.map.calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
+        self.x_iso, self.y_iso = calculate_isometric_position(self.x, self.y, self.z, self.game.camera.zoom)
         sprite = self.item.sprite
         sprite_resized = pg.transform.scale(sprite, (int(16 * self.game.camera.zoom), int(16 * self.game.camera.zoom)))
         self.game.screen.blit(sprite_resized, (self.x_iso - self.game.camera.x + sprite_resized.get_width() // 2, self.y_iso - self.game.camera.y + sprite_resized.get_height() // 2))
