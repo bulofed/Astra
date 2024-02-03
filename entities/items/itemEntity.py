@@ -19,4 +19,4 @@ class ItemEntity(Entity):
         for player in entities:
             if isinstance(player, Player) and player.x == self.x and player.y == self.y and player.z == self.z:
                 player.inventory.add_item(self.item)
-                items.remove_item(self)
+                items.remove(self)

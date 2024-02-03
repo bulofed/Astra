@@ -24,7 +24,7 @@ class Monster(Entity):
                     indicator.handle_action(entity_manager, *action)
                     break
 
-        self.game.entity_manager.next_turn(self.game.camera)
+        self.game.game_logic.next_turn(self.game.camera)
     
     def can_attack(self, entity):
         return super().can_attack(entity, Monster)

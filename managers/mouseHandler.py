@@ -24,6 +24,7 @@ class MouseHandler:
         self.mouse_pos = self.mouse_x, self.mouse_y = pg.mouse.get_pos()
         self.info_panel.update(self.selected_entity)
         self.entity_manager = self.game.entity_manager
+        self.game_logic = self.game.game_logic
         
     def draw(self):
         self.game.screen.blit(self.mouse, self.mouse_pos)
@@ -52,7 +53,7 @@ class MouseHandler:
         camera = self.game.camera
         
         if self.hovered_item is not None:
-            self.hovered_item.use(self.entity_manager.current_entity)
+            self.hovered_item.use(self.game_logic.current_entity)
 
         if self.selected_player is None and self.is_player_turn(clicked_entity):
             self.select_player(clicked_entity)
@@ -77,7 +78,7 @@ class MouseHandler:
         hovered_entity = self.get_clicked_entity()
         self.selected_entity = hovered_entity if hovered_entity is not None else None
         
-        self.hovered_item = self.entity_manager.current_entity.inventory.get_item_at(self.mouse_pos)
+        self.hovered_item = self.game_logic.current_entity.inventory.get_item_at(self.mouse_pos)
         if self.hovered_item is not None:
             self.item_tooltip.update(self.hovered_item)
         else:
@@ -119,4 +120,4 @@ class MouseHandler:
         )
         
     def is_player_turn(self, entity):
-        return isinstance(entity, Player) and entity == self.entity_manager.current_entity
+        return isinstance(entity, Player) and entity == self.game_logic.current_entity
