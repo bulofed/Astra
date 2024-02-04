@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
 from astra.game.common.settings import RES, FPS
-from astra.game.maps import Map
+from astra.game.maps.map_generation import Map
 from astra.game.camera import Camera
 from astra.game.game_logic import GameLogic
 from astra.game.ui.menus.select_player_menu import SelectPlayerMenu
@@ -9,11 +9,6 @@ from astra.game.ui.menus.pause_menu import PauseMenu
 from astra.managers.type.entity_manager import EntityManager
 from astra.managers.type.item_manager import ItemManager
 from astra.game.mouse_handler import MouseHandler
-from astra.entities.items.item_entity import ItemEntity
-from astra.entities.items.type.life_potion import LifePotion
-from astra.entities.players.type.swordman import Swordman
-from astra.entities.players.type.archer import Archer
-from astra.entities.monsters.type.goblin import Goblin
 
 class Game:
     def __init__(self):
@@ -27,22 +22,19 @@ class Game:
         self.mouse_handler = MouseHandler(self)
         self.camera = Camera()
         self.menus = []
+        self.level = 0
         self.new_game()
 
     def new_game(self):
         self.map = Map(self)
+        self.map.load_map(self.level)
         self.mouse_handler.set_mouse()
         self.menus.append(SelectPlayerMenu(self))
         pg.display.set_caption(self.map.name)
-
-    def init_entities(self, player_type):
-        if player_type == "swordman":
-            self.entity_manager.add(Swordman(self, 2, 2, 2))
-        elif player_type == "archer":
-            self.entity_manager.add(Archer(self, 2, 2, 2))
-        self.entity_manager.add(Goblin(self, 0, 2, 2))
-        self.inventory_manager.add(ItemEntity(self, 2, 0, 2, LifePotion()))
-        self.game_logic.current_entity = self.entity_manager.entities[0]
+        
+    def next_level(self):
+        self.level += 1
+        self.map.load_map(self.level)
         
     def update_game_state(self):
         self.entity_manager.update()

@@ -1,4 +1,5 @@
 from astra.indicators.indicator import Indicator, pg
+from astra.game.common.utils import is_position_occupied
 import itertools
 
 class MoveIndicator(Indicator):
@@ -20,8 +21,9 @@ class MoveIndicator(Indicator):
         x, y, z = self.entity.x + dx, self.entity.y + dy, self.entity.z - 1 + dz
         block = self.game.map.get_block(x, y, z)
         block_above = self.game.map.get_block(x, y, z + 1)
-        if block and block.solid and not block_above and not self.entity.is_position_occupied(x, y, z):
+        if block and block.solid and not block_above and not is_position_occupied(self.game.entity_manager.entities, x, y, z):
             self.actions_positions.append((x, y, z))
+        self.actions_positions.append((self.entity.x, self.entity.y, self.entity.z - 1))
         
     def handle_action(self, _, x, y, z):
         self.entity.move(x, y, z + 1)

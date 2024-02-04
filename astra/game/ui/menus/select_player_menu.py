@@ -1,6 +1,7 @@
 from astra.game.ui.menus.menu import Menu
 from astra.game.ui.type.image_button import ImageButton
 from astra.game.common.settings import WIDTH, HEIGHT
+from astra.game.maps.entity_spawners.levels.level0 import Level0
 import pygame as py
 
 class SelectPlayerMenu(Menu):
@@ -50,9 +51,9 @@ class SelectPlayerMenu(Menu):
             self.add_button(button)
         
     def select_swordman(self):
+        Level0(self.game).spawn_entities("swordman")
         self.game.pop_menu()
-        self.game.init_entities("swordman")
         
     def select_archer(self):
+        Level0(self.game).spawn_entities("archer")
         self.game.pop_menu()
-        self.game.init_entities("archer")

@@ -14,16 +14,13 @@ class Entity():
         self.orientation = 'down'
         self.flip = False
         self.sprite_manager = SpriteManagerFactory.create(self)
-        self.animation_manager = AnimationManager(self)
+        self.animation_manager = AnimationManager(self, game.delta)
         self.indicators_used = [AttackIndicator(game, self), MoveIndicator(game, self)]
         self.inventory = Inventory()
         self.properties = properties or EntityProperties()
         
     def get_sprite_manager_type(self):
         pass
-        
-    def update(self):
-        self.animation_manager.update()
         
     def move(self, x, y, z):
         dx, dy = self.x - x, self.y - y

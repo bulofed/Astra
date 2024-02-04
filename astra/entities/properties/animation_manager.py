@@ -1,5 +1,6 @@
 class AnimationManager:
-    def __init__(self, entity):
+    def __init__(self, entity, delta):
+        self.delta = delta
         self.entity = entity
         self.current_frame = 0
         self.animation_time = 0
@@ -22,7 +23,7 @@ class AnimationManager:
             self.reset_state_if_attacking()
 
     def update_animation_time(self):
-        self.animation_time += self.entity.game.delta / 1000
+        self.animation_time += self.delta / 1000
 
     def adjust_animation_time(self):
         self.animation_time -= self.frame_duration
