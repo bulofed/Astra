@@ -15,13 +15,6 @@ class SelectPlayerMenu(Menu):
     def _copy_background(self, bg):
         return bg.copy()
 
-    def _blit_icon(self, icon_image, icon, bg_rect):
-        icon_image.blit(icon, (bg_rect.width // 4, bg_rect.height // 4))
-        return icon_image
-
-    def _calculate_button_x(self, icon_image, index):
-        return (WIDTH // (self.total + 1)) * (index + 1) - icon_image.get_width() // 2
-
     def _create_icon(self, image_path, index, action, bg):
         icon = self._load_icon(image_path)
         icon_image = self._copy_background(bg)
@@ -44,7 +37,8 @@ class SelectPlayerMenu(Menu):
 
         self.icons = [
             ("astra/assets/ui/menu/swordman_icon.png", self.select_swordman),
-            ("astra/assets/ui/menu/archer_icon.png", self.select_archer)
+            ("astra/assets/ui/menu/archer_icon.png", self.select_archer),
+            ("astra/assets/ui/menu/ninja_icon.png", self.select_ninja)
         ]
         for i, (icon_path, action) in enumerate(self.icons):
             button = self._create_icon(icon_path, i, action, bg)
@@ -56,4 +50,8 @@ class SelectPlayerMenu(Menu):
         
     def select_archer(self):
         Level0(self.game).spawn_entities("archer")
+        self.game.pop_menu()
+        
+    def select_ninja(self):
+        Level0(self.game).spawn_entities("ninja")
         self.game.pop_menu()
