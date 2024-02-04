@@ -70,8 +70,8 @@ class Entity():
     def can_attack(self, entity, target_type):
         if isinstance(entity, target_type):
             return False
-        dx, dy, dz = entity.x - self.x, entity.y - self.y, entity.z - self.z
-        return abs(dx) <= self.properties.range and abs(dy) <= self.properties.range and abs(dz) <= self.properties.range
+        dx, dy = self.x - entity.x, self.y - entity.y
+        return self.properties.range[0] <= abs(dx) <= self.properties.range[1] and self.properties.range[0] <= abs(dy) <= self.properties.range[1]
     
     def is_position_occupied(self, x, y, z):
         return any((x, y, z) in indicator.actions_positions for indicator in self.indicators_used)
