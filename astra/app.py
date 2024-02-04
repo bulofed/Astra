@@ -9,7 +9,7 @@ from astra.managers.type.item_manager import ItemManager
 from astra.game.mouse_handler import MouseHandler
 from astra.entities.items.item_entity import ItemEntity
 from astra.entities.items.type.life_potion import LifePotion
-from astra.entities.players.type.swordman import Swordman
+from astra.entities.players.type.archer import Archer
 from astra.entities.monsters.type.goblin import Goblin
 
 class Game:
@@ -32,7 +32,7 @@ class Game:
         pg.display.set_caption(self.map.name)
 
     def init_entities(self):
-        self.entity_manager.add(Swordman(self, 2, 2, 2))
+        self.entity_manager.add(Archer(self, 2, 2, 2))
         self.entity_manager.add(Goblin(self, 0, 2, 2))
         self.inventory_manager.add(ItemEntity(self, 2, 0, 2, LifePotion()))
         self.game_logic.current_entity = self.entity_manager.entities[0]

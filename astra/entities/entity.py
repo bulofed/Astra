@@ -71,7 +71,7 @@ class Entity():
         if isinstance(entity, target_type):
             return False
         dx, dy = self.x - entity.x, self.y - entity.y
-        return self.properties.range[0] <= abs(dx) <= self.properties.range[1] and self.properties.range[0] <= abs(dy) <= self.properties.range[1]
+        return (self.properties.range[0] <= abs(dx) <= self.properties.range[1] and 0 <= abs(dy) <= self.properties.range[1]) or (self.properties.range[0] <= abs(dy) <= self.properties.range[1] and 0 <= abs(dx) <= self.properties.range[1])
     
     def is_position_occupied(self, x, y, z):
         return any((x, y, z) in indicator.actions_positions for indicator in self.indicators_used)
