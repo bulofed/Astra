@@ -4,6 +4,7 @@ from astra.game.common.settings import RES, FPS
 from astra.game.maps import Map
 from astra.game.camera import Camera
 from astra.game.game_logic import GameLogic
+from astra.game.ui.menus.pause_menu import PauseMenu
 from astra.managers.type.entity_manager import EntityManager
 from astra.managers.type.item_manager import ItemManager
 from astra.game.mouse_handler import MouseHandler
@@ -23,6 +24,7 @@ class Game:
         self.game_logic = GameLogic(self.entity_manager)
         self.mouse_handler = MouseHandler(self)
         self.camera = Camera()
+        self.menus = []
         self.new_game()
 
     def new_game(self):
@@ -38,25 +40,36 @@ class Game:
         self.game_logic.current_entity = self.entity_manager.entities[0]
 
     def update(self):
-        self.entity_manager.update()
-        self.inventory_manager.update(self.entity_manager.entities)
+        if not self.menus:
+            self.entity_manager.update()
+            self.inventory_manager.update(self.entity_manager.entities)
         pg.display.flip()
         self.delta = self.clock.tick(FPS)
 
     def draw(self):
         self.screen.fill('black')
-        self.map.draw(self.camera)
-        self.entity_manager.draw()
-        self.inventory_manager.draw()
-        self.game_logic.current_entity.inventory.draw(self.screen)
+        if not self.menus:
+            self.map.draw(self.camera)
+            self.entity_manager.draw()
+            self.inventory_manager.draw()
+            self.game_logic.current_entity.inventory.draw(self.screen)
+        else:
+            self.menus[-1].draw()
         self.mouse_handler.draw()
 
     def check_events(self):
         for event in pg.event.get():
-            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+            if event.type == pg.QUIT:
                 self.quit_game()
+            elif (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE and not self.menus):
+                self.menus.append(PauseMenu(self))
             else:
+                if self.menus:
+                    self.menus[-1].handle_input(event)
                 self.mouse_handler.handle_event(event)
+                
+    def pop_menu(self):
+        self.menus.pop()
 
     def quit_game(self):
         pg.quit()

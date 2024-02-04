@@ -1,5 +1,4 @@
 import pygame as pg
-from astra.game.common.settings import WIDTH, HEIGHT, INVENTORY_Y_OFFSET, FONT_SIZE
 from astra.game.ui.type.item_tooltip import ItemTooltip
 from astra.game.ui.type.info_panel import InfoPanel
 from astra.entities.items.item_entity import ItemEntity
@@ -11,10 +10,11 @@ class MouseHandler:
         self.dragging = False
         self.selected_player = None
         self.selected_entity = None
-        self.info_panel = InfoPanel(self.game, 20, 20, WIDTH, HEIGHT)
-        self.item_tooltip = ItemTooltip(self.game, 20, HEIGHT - INVENTORY_Y_OFFSET - FONT_SIZE*2)
+        self.info_panel = InfoPanel(self.game, 20, 20)
+        self.item_tooltip = ItemTooltip(self.game, 20, 20)
         self.entity_manager = self.game.entity_manager
         self.game_logic = self.game.game_logic
+        self.hovered_item = None
         
     def set_mouse(self):
         self.mouse = pg.Surface((5, 5))
@@ -30,8 +30,9 @@ class MouseHandler:
         
     def draw(self):
         self.game.screen.blit(self.mouse, self.mouse_pos)
-        self.info_panel.draw()
-        self.item_tooltip.draw()
+        if not self.game.menus:
+            self.item_tooltip.draw()
+            self.info_panel.draw() if self.hovered_item is None else None
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
