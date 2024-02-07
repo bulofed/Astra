@@ -1,5 +1,5 @@
-from astra.entities.entity import EntityProperties
-from astra.entities.players.player import Player
+from astra.objects.entities.entity import EntityProperties
+from astra.objects.entities.players.player import Player
 
 class Swordman(Player):
     def __init__(self, game, x, y, z):

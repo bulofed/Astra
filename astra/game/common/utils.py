@@ -17,5 +17,5 @@ def get_entity(entities, x, y, z):
         None,
     )
     
-def is_position_occupied(entities, x, y, z):
-    return any(entity.x == x and entity.y == y and entity.z == z + 1 for entity in entities)
+def is_position_occupied(entity, x, y, z):
+    return entity.x == x and entity.y == y and entity.z == z + 1

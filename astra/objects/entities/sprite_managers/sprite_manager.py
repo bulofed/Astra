@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 import pygame as pg # used in inherited classes
 
 class SpriteManager(ABC):
-    def __init__(self, entity):
+    def __init__(self, game, entity):
+        self.game = game
         self.entity = entity
         self.sprite = None
 

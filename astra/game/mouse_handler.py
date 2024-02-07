@@ -1,8 +1,8 @@
 import pygame as pg
 from astra.game.ui.type.item_tooltip import ItemTooltip
 from astra.game.ui.type.info_panel import InfoPanel
-from astra.entities.items.item_entity import ItemEntity
-from astra.entities.players.player import Player
+from astra.objects.entities.players.player import Player
+from astra.objects.item.item import Item
 
 class MouseHandler:
     def __init__(self, game):
@@ -12,7 +12,6 @@ class MouseHandler:
         self.selected_entity = None
         self.info_panel = InfoPanel(self.game, 20, 20)
         self.item_tooltip = ItemTooltip(self.game, 20, 20)
-        self.entity_manager = self.game.entity_manager
         self.game_logic = self.game.game_logic
         self.hovered_item = None
         
@@ -25,7 +24,6 @@ class MouseHandler:
     def update(self):
         self.mouse_pos = self.mouse_x, self.mouse_y = pg.mouse.get_pos()
         self.info_panel.update(self.selected_entity)
-        self.entity_manager = self.game.entity_manager
         self.game_logic = self.game.game_logic
         
     def draw(self):
@@ -52,7 +50,6 @@ class MouseHandler:
             
     def handle_left_click(self):
         clicked_entity = self.get_clicked_entity()
-        entity_manager = self.entity_manager
         camera = self.game.camera
         
         if self.hovered_item is not None:
@@ -60,8 +57,9 @@ class MouseHandler:
 
         if self.selected_player is None and self.is_player_turn(clicked_entity):
             self.select_player(clicked_entity)
+            
         elif self.selected_player is not None:
-            if not self.selected_player.handle_click(self, entity_manager, camera):
+            if not self.selected_player.handle_click(self, camera):
                 self.selected_player = None
                 
     def handle_mouse_button_up(self, event):
@@ -84,7 +82,7 @@ class MouseHandler:
                 
     def get_clicked_entity(self):
         return next(
-            (entity for entity in self.entity_manager.entities if self.is_entity_clicked(entity)),
+            (entity for entity in self.game.objects if self.is_entity_clicked(entity)),
             None,
         )
 
@@ -95,11 +93,11 @@ class MouseHandler:
         
     def select_player(self, player):
         self.selected_player = player
-        player.show_actions(self.entity_manager.entities)
+        player.show_actions()
         
     def get_item_entity_at(self, x, y, z):
         return next(
-            (entity for entity in self.entity_manager.entities if isinstance(entity, ItemEntity)
+            (entity for entity in self.game.objects if isinstance(entity, Item)
              and entity.x == x and entity.y == y and entity.z == z),
             None,
         )

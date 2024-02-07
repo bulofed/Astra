@@ -1,39 +1,43 @@
 from astra.game.common.settings import WIDTH, HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT
-from astra.entities.properties.animation_manager import AnimationManager
-from astra.entities.properties.entity_properties import EntityProperties
-from astra.managers.sprite_manager_factory import SpriteManagerFactory
+from astra.objects.object import Object
+from astra.objects.entities.properties.animation_manager import AnimationManager
+from astra.objects.entities.properties.entity_properties import EntityProperties
+from astra.objects.entities.sprite_managers.type.animated_sprite_manager import AnimatedSpriteManager
 from astra.indicators.type.attack_indicator import AttackIndicator
 from astra.indicators.type.move_indicator import MoveIndicator
-from astra.inventory.inventory import Inventory
+from astra.game.ui.inventory import Inventory
 
-class Entity():
+class Entity(Object):
     def __init__(self, game, x, y, z, properties=None):
-        self.game = game
-        self.x, self.y, self.z = x, y, z
+        """An entity is a game object that can move and interact with other entities."""
+        super().__init__(game, x, y, z)
         self.state = 'idle'
         self.orientation = 'down'
         self.flip = False
-        self.sprite_manager = SpriteManagerFactory.create(self)
+        self.sprite_manager = AnimatedSpriteManager(self.game, self)
         self.animation_manager = AnimationManager(self, game.delta)
-        self.indicators_used = [AttackIndicator(game, self), MoveIndicator(game, self)]
+        self.indicators_used = [AttackIndicator(self), MoveIndicator(self)]
         self.inventory = Inventory()
         self.properties = properties or EntityProperties()
         
-    def get_sprite_manager_type(self):
-        pass
+    def draw(self, camera):
+        self.sprite_manager.draw(camera)
+    
+    def update(self):
+        self.animation_manager.update()
         
     def move(self, x, y, z):
         dx, dy = self.x - x, self.y - y
         self.set_orientation(dx, dy)
         self.x, self.y, self.z = x, y, z
         
-    def attack(self, entity_manager, target):
+    def attack(self, target):
         dx, dy = self.x - target.x, self.y - target.y
         self.set_orientation(dx, dy)
         self.animate_attack()
         target.properties.health -= self.properties.damage
         if target.properties.health <= 0:
-            entity_manager.remove(target)
+            self.game.remove_object(target)
             self.game.game_logic.check_game_over()
             
     def set_orientation(self, dx, dy):

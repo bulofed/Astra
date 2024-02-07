@@ -47,16 +47,16 @@ class SelectPlayerMenu(Menu):
         
     def select_swordman(self):
         Level0(self.game).spawn_entities("swordman")
-        self.game.pop_menu()
+        self.game.start_game(0)
         
     def select_archer(self):
         Level0(self.game).spawn_entities("archer")
-        self.game.pop_menu()
+        self.game.start_game(0)
         
     def select_ninja(self):
         Level0(self.game).spawn_entities("ninja")
-        self.game.pop_menu()
+        self.game.start_game(0)
         
     def select_spearman(self):
         Level0(self.game).spawn_entities("spearman")
-        self.game.pop_menu()
+        self.game.start_game(0)

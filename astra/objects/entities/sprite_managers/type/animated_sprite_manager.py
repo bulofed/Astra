@@ -1,10 +1,10 @@
 from astra.game.common.settings import SPRITE_WIDTH, SPRITE_HEIGHT
 from astra.game.common.utils import calculate_isometric_position
-from astra.entities.sprite_managers.sprite_manager import SpriteManager, pg
+from astra.objects.entities.sprite_managers.sprite_manager import SpriteManager, pg
 
 class AnimatedSpriteManager(SpriteManager):
-    def __init__(self, entity):
-        super().__init__(entity)
+    def __init__(self, game, entity):
+        super().__init__(game, entity)
         self.idle_down = []
         self.idle_up = []
         self.attack_down = []
@@ -20,10 +20,8 @@ class AnimatedSpriteManager(SpriteManager):
                 pg.image.load(f'astra/assets/images/{parent_class_name}/{class_name}/{sprite_list}{i}.png') for i in range(1, 3)
             )
             
-    def draw(self):
-        for indicator in self.entity.indicators_used:
-            indicator.draw()
-        self.x_iso, self.y_iso = calculate_isometric_position(self.entity.x, self.entity.y, self.entity.z, self.entity.game.camera.zoom)
+    def draw(self, camera):
+        self.x_iso, self.y_iso = calculate_isometric_position(self.entity.x, self.entity.y, self.entity.z, camera.zoom)
         sprite = self.get_sprite_based_on_state_and_orientation()
         sprite = self.flip_sprite_if_needed(sprite)
         sprite_resized = self.resize_sprite(sprite)
