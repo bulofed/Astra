@@ -3,12 +3,12 @@ import sys
 from astra.game.common.settings import RES, FPS
 from astra.game.maps.map_generation import Map
 from astra.game.camera import Camera
+from astra.game.object_manager import ObjectManager
 from astra.game.game_logic import GameLogic
 from astra.game.ui.menus.select_player_menu import SelectPlayerMenu
 from astra.game.ui.menus.pause_menu import PauseMenu
 from astra.game.mouse_handler import MouseHandler
 from astra.objects.entities.entity import Entity
-from astra.indicators.indicator import Indicator
 
 class Game:
     def __init__(self):
@@ -16,8 +16,8 @@ class Game:
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
         self.delta = 1
-        self.objects = []
         self.game_logic = GameLogic()
+        self.object_manager = ObjectManager(self)
         self.mouse_handler = MouseHandler(self)
         self.camera = Camera()
         self.menus = []
@@ -33,59 +33,24 @@ class Game:
         self.map.load_map(level)
         self.mouse_handler.set_mouse()
         self.menus.clear()
-        entities = [obj for obj in self.objects if isinstance(obj, Entity)]
+        entities = [obj for obj in self.object_manager.get_objects() if isinstance(obj, Entity)]
         self.game_logic.set_entities(entities)
         pg.display.set_caption(self.map.name)
-        
-    def add_object(self, obj):
-        self.objects.append(obj)
-        
-    def remove_object(self, obj):
-        self.objects.remove(obj)
-        
-    def clear_objects(self):
-        self.objects.clear()
-        
-    def get_object(self, x, y, z, type=None):
-        return next(
-            (
-                obj
-                for obj in self.objects
-                if obj.x == x and obj.y == y and obj.z == z and isinstance(obj, type)
-            ),
-            None,
-        )
-        
-    def get_entity(self, x, y, z):
-        return self.get_object(x, y, z, Entity)
-        
-    def get_objects(self, type=None):
-        return [obj for obj in self.objects if isinstance(obj, type)]
-        
-    def draw_objects(self):
-        objects = sorted(self.objects, key=lambda obj: (obj.z, isinstance(obj, Entity), isinstance(obj, Indicator), obj.y, obj.x))
-        for obj in objects:
-            obj.draw(self.camera)
         
     def next_level(self):
         self.level += 1
         self.map.load_map(self.level)
-        
-    def update_objects(self):
-        self.game_logic.set_entities(self.get_objects(Entity))
-        for obj in self.objects:
-            obj.update()
 
     def update(self):
         if not self.menus:
-            self.update_objects()
+            self.object_manager.update()
         pg.display.flip()
         self.delta = self.clock.tick(FPS)
 
     def draw(self):
         self.screen.fill('black')
         if not self.menus:
-            self.draw_objects()
+            self.object_manager.draw()
         else:
             self.menus[-1].draw()
         self.mouse_handler.draw()

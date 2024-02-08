@@ -62,9 +62,9 @@ class MouseHandler:
         elif self.selected_player:
             selected_indicator = self.get_clicked_indicator()
             selected_indicator.handle_click()
-            for obj in list(self.game.objects):
+            for obj in list(self.game.object_manager.get_objects()):
                 if isinstance(obj, IndicatorObject):
-                    self.game.remove_object(obj)
+                    self.game.object_manager.remove_object(obj)
             self.selected_player = None
                 
     def handle_mouse_button_up(self, event):
@@ -86,12 +86,12 @@ class MouseHandler:
         self.game.camera.set_zoom(self.game.camera.zoom + zoom_adjustment)
                 
     def get_clicked_entity(self):
-        for obj in self.game.objects:
+        for obj in self.game.object_manager.get_objects():
             if isinstance(obj, Entity) and self.is_entity_clicked(obj):
                 return obj
         
     def get_clicked_indicator(self):
-        for obj in self.game.objects:
+        for obj in self.game.object_manager.get_objects():
             if isinstance(obj, IndicatorObject) and self.is_indicator_clicked(obj):
                 return obj
         
@@ -113,7 +113,7 @@ class MouseHandler:
         
     def get_item_entity_at(self, x, y, z):
         return next(
-            (entity for entity in self.game.objects if isinstance(entity, Item)
+            (entity for entity in self.game.object_manager.get_objects() if isinstance(entity, Item)
              and entity.x == x and entity.y == y and entity.z == z),
             None,
         )

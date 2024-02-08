@@ -17,6 +17,6 @@ class Level0(IEntitySpawner):
         }
         
         if player in entity_classes:
-            self.game.add_object(entity_classes[player](self.game, 1, 1, 1))
+            self.game.object_manager.add_object(entity_classes[player](self.game, 1, 1, 1))
         
-        self.game.add_object(Goblin(self.game, 2, 2, 1))
+        self.game.object_manager.add_object(Goblin(self.game, 2, 2, 1))

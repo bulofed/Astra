@@ -18,4 +18,4 @@ class Player(Entity):
     def move(self, x, y, z):
         super().move(x, y, z)
         if item_entity := self.game.mouse_handler.get_item_entity_at(x, y, z):
-            self.game.remove_object(item_entity)
+            self.game.object_manager.remove_object(item_entity)
