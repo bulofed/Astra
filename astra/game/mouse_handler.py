@@ -4,7 +4,7 @@ from astra.game.ui.type.info_panel import InfoPanel
 from astra.objects.entities.players.player import Player
 from astra.objects.item.item import Item
 from astra.objects.entities.entity import Entity
-from astra.indicators.type.indicator_object import IndicatorObject
+from astra.objects.indicators.indicator_object import IndicatorObject
 
 class MouseHandler:
     def __init__(self, game):
@@ -62,9 +62,6 @@ class MouseHandler:
         elif self.selected_player:
             selected_indicator = self.get_clicked_indicator()
             selected_indicator.handle_click()
-            for obj in list(self.game.object_manager.get_objects()):
-                if isinstance(obj, IndicatorObject):
-                    self.game.object_manager.remove_object(obj)
             self.selected_player = None
                 
     def handle_mouse_button_up(self, event):

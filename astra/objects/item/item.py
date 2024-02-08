@@ -1,6 +1,4 @@
-from astra.objects.object import Object
-from astra.game.common.utils import calculate_isometric_position
-import pygame as pg
+from astra.objects.object import Object, pg, calculate_isometric_position
 
 class Item(Object):
     def __init__(self, game, x, y, z, properties):

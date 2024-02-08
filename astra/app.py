@@ -8,7 +8,6 @@ from astra.game.game_logic import GameLogic
 from astra.game.ui.menus.select_player_menu import SelectPlayerMenu
 from astra.game.ui.menus.pause_menu import PauseMenu
 from astra.game.mouse_handler import MouseHandler
-from astra.objects.entities.entity import Entity
 
 class Game:
     def __init__(self):
@@ -33,8 +32,6 @@ class Game:
         self.map.load_map(level)
         self.mouse_handler.set_mouse()
         self.menus.clear()
-        entities = [obj for obj in self.object_manager.get_objects() if isinstance(obj, Entity)]
-        self.game_logic.set_entities(entities)
         pg.display.set_caption(self.map.name)
         
     def next_level(self):

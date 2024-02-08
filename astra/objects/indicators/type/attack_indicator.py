@@ -1,5 +1,5 @@
-from astra.indicators.indicator import Indicator, pg
-from astra.indicators.type.indicator_object import IndicatorObject
+from astra.objects.indicators.indicator import Indicator, pg
+from astra.objects.indicators.indicator_object import IndicatorObject
 import itertools
 
 class AttackIndicator(Indicator):

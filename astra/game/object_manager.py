@@ -1,5 +1,5 @@
 from astra.objects.entities.entity import Entity
-from astra.indicators.indicator import Indicator
+from astra.objects.indicators.indicator import Indicator
 
 class ObjectManager:
     def __init__(self, game):

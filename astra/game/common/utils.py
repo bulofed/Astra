@@ -6,6 +6,3 @@ def calculate_isometric_position(x, y, z, zoom):
         iso_x_factor = .5
         iso_y_factor = .25
         return (y - x) * obj_width * iso_x_factor + WIDTH/2, (x + y - z*2) * obj_height * iso_y_factor + HEIGHT/2
-    
-def is_position_occupied(entity, x, y, z):
-    return entity.x == x and entity.y == y and entity.z == z + 1
