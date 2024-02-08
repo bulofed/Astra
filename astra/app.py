@@ -64,7 +64,6 @@ class Game:
         
     def draw_objects(self):
         objects = sorted(self.objects, key=lambda obj: (obj.z, isinstance(obj, Entity), isinstance(obj, Indicator), obj.y, obj.x))
-        print(objects)
         for obj in objects:
             obj.draw(self.camera)
         
@@ -73,6 +72,7 @@ class Game:
         self.map.load_map(self.level)
         
     def update_objects(self):
+        self.game_logic.set_entities(self.get_objects(Entity))
         for obj in self.objects:
             obj.update()
 

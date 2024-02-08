@@ -3,6 +3,8 @@ from astra.game.ui.type.item_tooltip import ItemTooltip
 from astra.game.ui.type.info_panel import InfoPanel
 from astra.objects.entities.players.player import Player
 from astra.objects.item.item import Item
+from astra.objects.entities.entity import Entity
+from astra.indicators.type.indicator_object import IndicatorObject
 
 class MouseHandler:
     def __init__(self, game):
@@ -50,7 +52,6 @@ class MouseHandler:
             
     def handle_left_click(self):
         clicked_entity = self.get_clicked_entity()
-        camera = self.game.camera
         
         if self.hovered_item is not None:
             self.hovered_item.use(self.game_logic.current_entity)
@@ -58,9 +59,13 @@ class MouseHandler:
         if self.selected_player is None and self.is_player_turn(clicked_entity):
             self.select_player(clicked_entity)
             
-        elif self.selected_player is not None:
-            if not self.selected_player.handle_click(self, camera):
-                self.selected_player = None
+        elif self.selected_player:
+            selected_indicator = self.get_clicked_indicator()
+            selected_indicator.handle_click()
+            for obj in list(self.game.objects):
+                if isinstance(obj, IndicatorObject):
+                    self.game.remove_object(obj)
+            self.selected_player = None
                 
     def handle_mouse_button_up(self, event):
         if event.button == 1:
@@ -81,14 +86,25 @@ class MouseHandler:
         self.game.camera.set_zoom(self.game.camera.zoom + zoom_adjustment)
                 
     def get_clicked_entity(self):
-        return next(
-            (entity for entity in self.game.objects if self.is_entity_clicked(entity)),
-            None,
-        )
+        for obj in self.game.objects:
+            if isinstance(obj, Entity) and self.is_entity_clicked(obj):
+                return obj
+        
+    def get_clicked_indicator(self):
+        for obj in self.game.objects:
+            if isinstance(obj, IndicatorObject) and self.is_indicator_clicked(obj):
+                return obj
+        
+    def is_indicator_clicked(self, indicator):
+        x_iso = getattr(indicator, 'x_iso', None)
+        y_iso = getattr(indicator, 'y_iso', None)
+        if indicator_mask := getattr(indicator, 'indicator_mask', None):
+            return indicator_mask.overlap(self.mouse_mask, (self.mouse_x - x_iso + self.game.camera.x, self.mouse_y - y_iso + self.game.camera.y))
+        return False
 
     def is_entity_clicked(self, entity):
         if entity_mask := getattr(entity, 'entity_mask', None):
-            return entity_mask.overlap(self.mouse_mask, (self.mouse_x - entity.sprite_manager.x_iso + self.game.camera.x, self.mouse_y - entity.sprite_manager.y_iso + self.game.camera.y)) is not None
+            return entity_mask.overlap(self.mouse_mask, (self.mouse_x - entity.sprite_manager.x_iso + self.game.camera.x, self.mouse_y - entity.sprite_manager.y_iso + self.game.camera.y))
         return False
         
     def select_player(self, player):

@@ -4,10 +4,11 @@ from astra.objects.object import Object
 import pygame as pg
 
 class IndicatorObject(Object):
-    def __init__(self, game, entity, x, y, z, indicator):
+    def __init__(self, game, entity, x, y, z, indicator, type):
         super().__init__(game, x, y, z)
         self.entity = entity
         self.indicator = indicator
+        self.type = type
         self.indicator_mask = pg.mask.from_surface(indicator)
 
     def draw(self, camera):
@@ -17,9 +18,13 @@ class IndicatorObject(Object):
         )
         self.indicator_mask = pg.mask.from_surface(indicator_resized)
     
-        x_iso, y_iso = calculate_isometric_position(self.x, self.y, self.z, camera.zoom)
+        self.x_iso, self.y_iso = calculate_isometric_position(self.x, self.y, self.z, camera.zoom)
         
-        self.game.screen.blit(indicator_resized, (x_iso - camera.x, y_iso - camera.y))
+        self.game.screen.blit(indicator_resized, (self.x_iso - camera.x, self.y_iso - camera.y))
+        
+    def handle_click(self):
+        self.type.handle_action(self.x, self.y, self.z)
+        
         
     def update(self):
         pass
