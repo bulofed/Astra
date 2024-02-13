@@ -22,8 +22,7 @@ class IndicatorObject(Object):
         
     def handle_click(self):
         self.type.handle_action(self.x, self.y, self.z)
-        for action in list(self.game.object_manager.get_objects(IndicatorObject)):
-            self.game.object_manager.remove_object(action)
+        self.game.object_manager.remove_objects('indicatorobject')
         self.game.game_logic.next_turn(self.game.camera)
         
         

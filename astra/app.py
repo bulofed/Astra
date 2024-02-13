@@ -48,6 +48,7 @@ class Game:
         self.screen.fill('black')
         if not self.menus:
             self.object_manager.draw()
+            self.game_logic.current_entity.inventory.draw(self.screen)
         else:
             self.menus[-1].draw()
         self.mouse_handler.draw()

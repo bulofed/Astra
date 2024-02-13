@@ -37,7 +37,7 @@ class Entity(Object):
         self.animate_attack()
         target.properties.health -= self.properties.damage
         if target.properties.health <= 0:
-            self.game.object_manager.remove_object(target)
+            self.game.object_manager.remove_object(target.__name__)
             self.game.game_logic.check_game_over()
             
     def set_orientation(self, dx, dy):

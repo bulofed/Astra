@@ -20,9 +20,9 @@ class MoveIndicator(Indicator):
 
     def _check_and_append_position(self, dx, dy, dz):
         x, y, z = self.entity.x + dx, self.entity.y + dy, self.entity.z - 1 + dz
-        block = self.game.object_manager.get_object(x, y, z, type=Block)
-        block_above = self.game.object_manager.get_object(x, y, z + 1, type=Block)
-        if block and block.solid and (not block_above or not block_above.solid) and not self.game.object_manager.get_object(x, y, z + 1, self.entity_class):
+        block = self.game.object_manager.get_object(x, y, z, 'block')
+        block_above = self.game.object_manager.get_object(x, y, z + 1, 'block')
+        if block and block.solid and (not block_above or not block_above.solid) and not self.game.object_manager.get_object(x, y, z + 1, 'entity'):
             self.game.object_manager.add_object(IndicatorObject(self.game, self.entity, x, y, z, self.indicator, self))
         
     def handle_action(self, x, y, z):
