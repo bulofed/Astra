@@ -5,6 +5,12 @@ root = Tk()
 resX = 1000; resY = 500
 canvas = Canvas(root, bg="blue", height=resY, width=resX); canvas.pack()
 
+# Définition des limites pour la génération des nœuds
+x_lower_limit = 40
+x_upper_limit = 160
+y_lower_limit = 20
+y_upper_limit = 80
+
 map = {
     'xy': [200, 100],
     'cLevel': 0,
@@ -40,8 +46,9 @@ class node:
 def genNodes():
     for i in range(map['xy'][0]):
         for j in range(map['xy'][1]):
-            map['nodes'].append(node([i,j]))
-            # print(map['nodes'][i * map['xy'][1] + j].xy)
+            if x_lower_limit <= i <= x_upper_limit and y_lower_limit <= j <= y_upper_limit:
+                map['nodes'].append(node([i,j]))
+                # print(map['nodes'][i * map['xy'][1] + j].xy)
             
 print('Gen')
 genNodes()
@@ -65,16 +72,19 @@ def getNeighbors():
 
 print('Getting Neighbors')
 getNeighbors()
-
 def seed():
     start_node = rand.choice(map['nodes'])
     start_node.active = True
 
     for n in map['nodes']:
-        if n != start_node:
-            if rand.randint(0, 600) <= map['seed']:
-                n.el = rand.choice(map['Choice'])
-                n.temp = rand.choice(map['Choice'])
+        if x_lower_limit <= n.xy[0] <= x_upper_limit and y_lower_limit <= n.xy[1] <= y_upper_limit:
+            if n != start_node:
+                if rand.randint(0, 600) <= map['seed']:
+                    n.el = rand.choice(map['Choice'])
+                    n.temp = rand.choice(map['Choice'])
+
+
+
 
 
 print('Seeding')
