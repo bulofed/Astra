@@ -1,14 +1,15 @@
 from astra.game.common.settings import SPRITE_WIDTH, SPRITE_HEIGHT
 from astra.game.common.utils import calculate_isometric_position
-from astra.objects.entities.sprite_managers.sprite_manager import SpriteManager, pg
+import pygame as pg
 
-class AnimatedSpriteManager(SpriteManager):
+class AnimatedSpriteManager():
     def __init__(self, game, entity):
-        super().__init__(game, entity)
         self.idle_down = []
         self.idle_up = []
         self.attack_down = []
         self.attack_up = []
+        self.game = game
+        self.entity = entity
         self.load_sprite()
 
     def load_sprite(self):

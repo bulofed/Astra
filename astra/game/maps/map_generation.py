@@ -41,4 +41,4 @@ class Map:
             for y, row in enumerate(level['map']):
                 for x, block_type in enumerate(row):
                     if block_type != 0:
-                        self.game.add_object(Block(self.game, x, y, z, block_type))
+                        self.game.object_manager.add_object(Block(self.game, x, y, z, block_type))

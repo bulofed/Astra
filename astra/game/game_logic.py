@@ -15,7 +15,7 @@ class GameLogic:
         self.current_turn = (self.current_turn + 1) % len(self.entities)
         self.current_entity = self.entities[self.current_turn]
         self.current_entity.center_camera(camera)
-        self.current_entity.random_action(self.entities)
+        self.current_entity.random_action()
 
     def check_win_condition(self):
         return not any(isinstance(entity, Monster) for entity in self.entities)

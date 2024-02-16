@@ -3,8 +3,8 @@ from astra.objects.object import Object
 from astra.objects.entities.properties.animation_manager import AnimationManager
 from astra.objects.entities.properties.entity_properties import EntityProperties
 from astra.objects.entities.sprite_managers.type.animated_sprite_manager import AnimatedSpriteManager
-from astra.indicators.type.attack_indicator import AttackIndicator
-from astra.indicators.type.move_indicator import MoveIndicator
+from astra.objects.indicators.type.attack_indicator import AttackIndicator
+from astra.objects.indicators.type.move_indicator import MoveIndicator
 from astra.game.ui.inventory import Inventory
 
 class Entity(Object):
@@ -37,7 +37,7 @@ class Entity(Object):
         self.animate_attack()
         target.properties.health -= self.properties.damage
         if target.properties.health <= 0:
-            self.game.remove_object(target)
+            self.game.object_manager.remove_object(target.__name__)
             self.game.game_logic.check_game_over()
             
     def set_orientation(self, dx, dy):
@@ -68,19 +68,27 @@ class Entity(Object):
         camera.x = self.sprite_manager.x_iso - WIDTH/2 + SPRITE_WIDTH/2 * camera.zoom
         camera.y = self.sprite_manager.y_iso - HEIGHT/2 + SPRITE_HEIGHT/2 * camera.zoom
         
+    def is_within_range(self, value, min_max):
+        return min_max[0] <= value <= min_max[1]
+
     def can_attack(self, entity, target_type):
         if isinstance(entity, target_type):
             return False
-        dx, dy = self.x - entity.x, self.y - entity.y
-        return (self.properties.range[0] <= abs(dx) <= self.properties.range[1] and 0 <= abs(dy) <= self.properties.range[1]) or (self.properties.range[0] <= abs(dy) <= self.properties.range[1] and 0 <= abs(dx) <= self.properties.range[1])
-    
-    def is_position_occupied(self, x, y, z):
-        return any((x, y, z) in indicator.actions_positions for indicator in self.indicators_used)
+        dx, dy = abs(self.x - entity.x), abs(self.y - entity.y)
+        return self.is_within_range(dx, self.properties.range) and self.is_within_range(dy, self.properties.range)
     
     def get_info(self):
-        return f"Name: {self.__class__.__name__}\nHealth: {self.properties.health}/{self.properties.max_health}\nDamage: {self.properties.damage}\nRange: {self.properties.range}\nSpeed: {self.properties.speed}\nInventory: {self.inventory.get_items()}"
+        properties = self.properties 
+        return (
+            f"Name: {self.__class__.__name__}\n"
+            f"Health: {properties.health}/{properties.max_health}\n"
+            f"Damage: {properties.damage}\n"
+            f"Range: {properties.range}\n"
+            f"Speed: {properties.speed}\n"
+            f"Inventory: {self.inventory.get_items()}"
+        )
     
-    def random_action(self, _):
+    def random_action(self):
         pass
     
     def heal(self, amount):

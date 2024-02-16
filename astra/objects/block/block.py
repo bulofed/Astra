@@ -1,7 +1,5 @@
-from astra.objects.object import Object
+from astra.objects.object import Object, pg, calculate_isometric_position
 import os
-import pygame as pg
-from astra.game.common.utils import calculate_isometric_position
 from astra.game.common.settings import TILE_WIDTH, TILE_HEIGHT
 
 class Block(Object):

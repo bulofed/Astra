@@ -1,25 +1,17 @@
-import random as rd
+from random import choice
 from astra.objects.entities.entity import Entity
 
 class Monster(Entity):
         
-    def random_action(self, entities):
+    def random_action(self):
         for indicator in self.indicators_used:
-                indicator.search_actions()
+            indicator.search_actions()
 
-        if all_actions := [
-            action
-            for indicator in self.indicators_used
-            for action in indicator.actions_positions
-        ]:
-            action = rd.choice(all_actions)
-
-            for indicator in self.indicators_used:
-                if action in indicator.actions_positions:
-                    indicator.handle_action(*action)
-                indicator.actions_positions.clear()
-        
-        self.game.game_logic.next_turn(self.game.camera)
+        if all_actions := list(self.game.object_manager.objects['indicatorobject']):
+            action = choice(all_actions)
+            action.handle_click()
+        else:
+            self.game.game_logic.next_turn(self.game.camera)
     
     def can_attack(self, entity):
         return super().can_attack(entity, Monster)

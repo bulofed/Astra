@@ -15,7 +15,7 @@ class PauseMenu(Menu):
         bg_color = GREY
         color = WHITE
         font = py.font.SysFont("notosans", 20)
-        resume_button = TextButton("Resume", buttons_x, resume_y, BUTTON_WIDTH, BUTTON_HEIGHT, color, bg_color, font, self.resume)
+        resume_button = TextButton("Resume", buttons_x, resume_y,    BUTTON_WIDTH, BUTTON_HEIGHT, color, bg_color, font, self.resume)
         quit_button = TextButton("Quit", buttons_x, quit_y, BUTTON_WIDTH, BUTTON_HEIGHT, color, bg_color, font, self.quit)
         self.add_button(resume_button)
         self.add_button(quit_button)
