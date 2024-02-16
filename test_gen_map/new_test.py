@@ -3,13 +3,13 @@ import random as rand
 
 root = Tk()
 resX = 1000; resY = 500
-canvas = Canvas(root, bg="blue", height=resY, width=resX); canvas.pack()
+canvas = Canvas(root, bg="black", height=resY, width=resX); canvas.pack()
 
 # Définition des limites pour la génération des nœuds
-x_lower_limit = 40
-x_upper_limit = 160
-y_lower_limit = 20
-y_upper_limit = 80
+x_lower_limit = 0
+x_upper_limit = 200
+y_lower_limit = 0
+y_upper_limit = 100
 
 map = {
     'xy': [200, 100],
@@ -79,13 +79,10 @@ def seed():
     for n in map['nodes']:
         if x_lower_limit <= n.xy[0] <= x_upper_limit and y_lower_limit <= n.xy[1] <= y_upper_limit:
             if n != start_node:
-                if rand.randint(0, 600) <= map['seed']:
+                # Ajuster la condition pour augmenter la probabilité au centre
+                if rand.randint(0, 800) <= map['seed']:
                     n.el = rand.choice(map['Choice'])
                     n.temp = rand.choice(map['Choice'])
-
-
-
-
 
 print('Seeding')
 seed()
@@ -117,7 +114,7 @@ def raiseLand():
 def lowerSea():
     for n in map['nodes']:
         if n.el <= 0:
-            if rand.randrange(0, 100) < 1:
+            if rand.randrange(0, 100) < 0:
                 n.el -= 100
 def raiseTemp():
     for n in map['nodes']:
