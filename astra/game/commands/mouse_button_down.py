@@ -1,5 +1,7 @@
 from astra.game.commands.command import Command
 from astra.objects.entities.players.player import Player
+from astra.objects.item.types.self_item import SelfItem
+from astra.objects.item.types.target_item import TargetItem
 
 class MouseButtonDown(Command):
     def __init__(self, mouse_handler):
@@ -12,20 +14,28 @@ class MouseButtonDown(Command):
             self.mouse_handler.dragging = True
             self.mouse_handler.drag_start = self.mouse_handler.mouse_pos
         elif event.button in [4, 5]:
-            self.adjust_zoom(event.button)
+             self.adjust_zoom(event.button)
             
     def handle_left_click(self):
-        
-        if self.mouse_handler.hovered_item is not None:
-            self.mouse_handler.hovered_item.use(self.mouse_handler.game.game_logic.current_entity)
+        item = self.mouse_handler.hovered_item
+        if item is not None:
+            if issubclass(item.__class__, SelfItem):
+                current_entity = self.mouse_handler.game.game_logic.current_entity
+                item.use(current_entity)
+            elif issubclass(item.__class__, TargetItem):
+                self.mouse_handler.game.game_logic.select_item(item)
+        else:
+            entity = self.mouse_handler.hovered_entity
+            if entity is not None:
+                self.mouse_handler.game.game_logic.use_selected_item(entity)
 
-        if self.selected_player is None and self.is_player_turn(self.mouse_handler.hovered_entity):
-            self.select_player(self.mouse_handler.hovered_entity)
-            
-        elif self.selected_player:
-            selected_indicator = self.get_clicked_indicator()
-            selected_indicator.handle_click()
-            self.selected_player = None
+            if self.selected_player is None and self.is_player_turn(self.mouse_handler.hovered_entity):
+                self.select_player(self.mouse_handler.hovered_entity)
+
+            elif self.selected_player:
+                selected_indicator = self.get_clicked_indicator()
+                selected_indicator.handle_click()
+                self.selected_player = None
             
     def is_player_turn(self, entity):
         return isinstance(entity, Player) and entity == self.mouse_handler.game_logic.current_entity
