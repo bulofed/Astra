@@ -60,7 +60,6 @@ def genNodes():
         for j in range(map['resY']):
             if x_lower_limit <= i <= x_upper_limit and y_lower_limit <= j <= y_upper_limit:
                 map['nodes'].append(node([i,j]))
-                # print(map['nodes'][i * map['xy'][1] + j].xy)
             
 print('Gen')
 genNodes()
