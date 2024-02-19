@@ -37,7 +37,7 @@ class Entity(Object):
         self.animate_attack()
         target.properties.health -= self.properties.damage
         if target.properties.health <= 0:
-            self.game.object_manager.remove_object(target.__name__)
+            self.game.object_manager.remove_object(target)
             self.game.game_logic.check_game_over()
             
     def set_orientation(self, dx, dy):
@@ -90,6 +90,10 @@ class Entity(Object):
     
     def random_action(self):
         pass
+    
+    def apply_effect(self, effect):
+        if effect.name == 'heal':
+            self.heal(effect.value)
     
     def heal(self, amount):
         self.properties.health += amount
