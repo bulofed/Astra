@@ -1,5 +1,6 @@
 from tkinter import *
 import random as rand
+import json
 
 root = Tk()
 resX = 1000; resY = 500
@@ -12,7 +13,8 @@ y_lower_limit = 0
 y_upper_limit = 100
 
 map = {
-    'xy': [200, 100],
+    'resX': 200,
+    'resY': 100,
     'cLevel': 0,
     'nodes': [],
     'seed': 35,
@@ -25,7 +27,8 @@ class node:
         self.el = 0
         self.temp = 0         
         self.neighbors = []
-        self.active = True   
+        self.active = True
+        
     def render(self):
         if self.el <= map['cLevel']:
             color = 'blue'
@@ -42,10 +45,19 @@ class node:
         a = self.xy[0]*5; b = self.xy[1]*5
         c = a + 5; d = b + 5
         canvas.create_rectangle(a,b,c,d, fill= color, outline= color)
+        
+    def to_dict(self):
+        return {
+            'xy': self.xy,
+            'el': self.el,
+            'temp': self.temp,
+            'neighbors': [n.xy for n in self.neighbors],
+            'active': self.active,
+        }
 
 def genNodes():
-    for i in range(map['xy'][0]):
-        for j in range(map['xy'][1]):
+    for i in range(map['resX']):
+        for j in range(map['resY']):
             if x_lower_limit <= i <= x_upper_limit and y_lower_limit <= j <= y_upper_limit:
                 map['nodes'].append(node([i,j]))
                 # print(map['nodes'][i * map['xy'][1] + j].xy)
@@ -72,6 +84,7 @@ def getNeighbors():
 
 print('Getting Neighbors')
 getNeighbors()
+
 def seed():
     start_node = rand.choice(map['nodes'])
     start_node.active = True
@@ -149,9 +162,24 @@ print('2')
 for i in range(100):
     process1()
 
-canvas.delete('all')
-for n in map['nodes']:
-    n.render()
-canvas.update()
+# canvas.delete('all')
+# for n in map['nodes']:
+#     n.render()
+# canvas.update()
 
-mainloop()
+# mainloop()
+
+# Convert nodes to a dictionary representation
+nodes_dict = [node.to_dict() for node in map['nodes']]
+
+# Create the final JSON structure
+output_json = {
+    'resX': map['resX'],
+    'resY': map['resY'],
+    'nodes': nodes_dict,
+}
+
+# Output to JSON file
+json_stock = "./test_gen_map/test.json"
+with open(json_stock, "w") as f:
+    json.dump(output_json, f, indent=1)
