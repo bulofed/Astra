@@ -52,7 +52,6 @@ class node:
             'el': self.el,
             'temp': self.temp,
             'neighbors': [n.xy for n in self.neighbors],
-            'active': self.active,
         }
 
 def genNodes():
@@ -173,8 +172,6 @@ nodes_dict = [node.to_dict() for node in map['nodes']]
 
 # Create the final JSON structure
 output_json = {
-    'resX': map['resX'],
-    'resY': map['resY'],
     'nodes': nodes_dict,
 }
 
