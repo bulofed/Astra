@@ -47,12 +47,36 @@ class node:
         canvas.create_rectangle(a,b,c,d, fill= color, outline= color)
         
     def to_dict(self):
+        color_mapping = {
+        'blue': 5,
+        'light grey': 3,
+        'green': 4,
+        'dark green': 4,
+        'yellow': 2,
+        'white': 6,
+        }
+
+        color = 'white'  # Default color
+        if self.el <= map['cLevel']:
+            color = 'blue'
+        elif self.el <= 25 and self.temp <= 0:
+            color = 'light grey'
+        elif self.el <= 25 and 0 < self.temp <= 5:
+            color = 'green'
+        elif self.el <= 25 and 5 < self.temp <= 10:
+            color = 'dark green'
+        elif self.el <= 25 and 10 < self.temp <= 100:
+            color = 'yellow'
+
         return {
             'xy': self.xy,
             'el': self.el,
             'temp': self.temp,
+            'color_number': color_mapping[color],
             'neighbors': [n.xy for n in self.neighbors],
         }
+
+
 
 def genNodes():
     for i in range(map['resX']):
@@ -148,17 +172,17 @@ def process4():
     raiseTemp()
 
     
-print('0')
-for i in range(100):
-    process1()
-    process4()
-print('1')
-for i in range(15):
-    process2()
-    process3()
-print('2')
-for i in range(100):
-    process1()
+# print('0')
+# for i in range(100):
+#     process1()
+#     process4()
+# print('1')
+# for i in range(15):
+#     process2()
+#     process3()
+# print('2')
+# for i in range(100):
+#     process1()
 
 # canvas.delete('all')
 # for n in map['nodes']:
@@ -167,12 +191,55 @@ for i in range(100):
 
 # mainloop()
 
-# Convert nodes to a dictionary representation
-nodes_dict = [node.to_dict() for node in map['nodes']]
+def generate_map_for_height(height):
+    genNodes()  # You may need to reset the map for each height
+    seed()
+
+    for i in range(100):
+        process1()
+        process4()
+
+    for i in range(15):
+        process2()
+        process3()
+
+    for i in range(100):
+        process1()
+
+    # Convert nodes to a dictionary representation for the current height
+    nodes_dict = [node.to_dict() for node in map['nodes']]
+
+    # Extract 'color_number' for each node's neighbors and create a 100x100 map
+    map_data = [[0] * 100 for _ in range(100)]
+
+    for row in nodes_dict:
+        x, y = row['xy']
+        for neighbor in row['neighbors']:
+            neighbor_node = next((n for n in nodes_dict if n['xy'] == neighbor), None)
+            if neighbor_node:
+                nx, ny = neighbor_node['xy']
+                # Scale coordinates to fit within the range [0, 99]
+                scaled_nx, scaled_ny = int(nx % 100), int(ny % 100)
+                map_data[scaled_nx][scaled_ny] = neighbor_node['color_number']
+
+    # Insert the current height and map at the beginning of the levels list
+    map['levels'].insert(0, {
+        'height': height,
+        'map': map_data
+    })
+
+# Reset 'levels' before generating new levels
+map['levels'] = []
+
+# Create levels with different heights
+for current_height in range(3):  # Adjust the range as needed
+    map['cLevel'] = current_height
+    generate_map_for_height(current_height)
 
 # Create the final JSON structure
 output_json = {
-    'nodes': nodes_dict,
+    'name': "Stage 0",
+    'levels': map['levels']
 }
 
 # Output to JSON file
