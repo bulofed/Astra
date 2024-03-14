@@ -18,7 +18,7 @@ class Game:
         self.game_logic = GameLogic()
         self.object_manager = ObjectManager(self)
         self.mouse_handler = MouseHandler(self)
-        self.camera = Camera()
+        self.camera = Camera(RES[0], RES[1])
         self.menus = []
         self.level = 0
         self.new_game()

@@ -13,11 +13,9 @@ class GameLogic:
         self.selected_item = item
         
     def use_selected_item(self, target):
-        if self.selected_item is not None and issubclass(self.selected_item.__class__, TargetItem):
-            current_entity = self.mouse_handler.game.game_logic.current_entity
-            if current_entity.can_attack(target):
-                self.selected_item.use(target)
-                self.selected_item = None
+        if self.selected_item is not None and issubclass(self.selected_item.__class__, TargetItem) and self.current_entity.can_attack(target):
+            self.selected_item.use(target)
+            self.selected_item = None
         
     def set_entities(self, entities):
         self.entities = entities

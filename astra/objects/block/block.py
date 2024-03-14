@@ -27,8 +27,14 @@ class Block(Object):
     def draw(self, camera):
         """Draws the block on the screen."""
         x, y = calculate_isometric_position(self.x, self.y, self.z, camera.zoom)
-        image_zoomed = pg.transform.scale(self.block_images[self.type], (int(TILE_WIDTH * camera.zoom), int(TILE_HEIGHT * camera.zoom)))
-        self.game.screen.blit(image_zoomed, (x - camera.x, y - camera.y))
+        screen_x = x - camera.x
+        screen_y = y - camera.y
+        offset_x = TILE_WIDTH * camera.zoom
+        offset_y = TILE_HEIGHT * camera.zoom
+        
+        if -offset_x <= screen_x <= camera.width + offset_x and -offset_y <= screen_y <= camera.height + offset_y:
+            image_zoomed = pg.transform.scale(self.block_images[self.type], (int(TILE_WIDTH * camera.zoom), int(TILE_HEIGHT * camera.zoom)))
+            self.game.screen.blit(image_zoomed, (x - camera.x, y - camera.y))
         
     def update(self):
         pass

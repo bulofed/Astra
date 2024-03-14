@@ -1,7 +1,9 @@
 from astra.game.common.settings import CAMERA_X, CAMERA_Y, ZOOM
 
 class Camera:
-    def __init__(self):
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
         self.x = CAMERA_X
         self.y = CAMERA_Y
         self.zoom = ZOOM

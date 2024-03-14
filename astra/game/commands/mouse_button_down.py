@@ -33,8 +33,8 @@ class MouseButtonDown(Command):
                 self.select_player(self.mouse_handler.hovered_entity)
 
             elif self.selected_player:
-                selected_indicator = self.get_clicked_indicator()
-                selected_indicator.handle_click()
+                if selected_indicator := self.get_clicked_indicator():
+                    selected_indicator.handle_click()
                 self.selected_player = None
             
     def is_player_turn(self, entity):

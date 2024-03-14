@@ -1,6 +1,6 @@
 from astra.game.maps.entity_spawners.i_entity_spawner import IEntitySpawner
 from astra.objects.item.item import Item
-from astra.objects.item.item_list.life_potion import LifePotion
+from astra.objects.item.item_list.poison_potion import PoisonPotion
 from astra.objects.entities.players.type.swordman import Swordman
 from astra.objects.entities.players.type.archer import Archer
 from astra.objects.entities.players.type.ninja import Ninja
@@ -20,4 +20,4 @@ class Level0(IEntitySpawner):
             self.game.object_manager.add_object(entity_classes[player](self.game, 3, 4, 1))
         
         self.game.object_manager.add_object(Goblin(self.game, 4, 3, 1))
-        self.game.object_manager.add_object(Item(self.game, 4, 4, 1, LifePotion()))
+        self.game.object_manager.add_object(Item(self.game, 4, 4, 1, PoisonPotion()))

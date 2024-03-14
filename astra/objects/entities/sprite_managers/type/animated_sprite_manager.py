@@ -23,11 +23,19 @@ class AnimatedSpriteManager():
             
     def draw(self, camera):
         self.x_iso, self.y_iso = calculate_isometric_position(self.entity.x, self.entity.y, self.entity.z, camera.zoom)
-        sprite = self.get_sprite_based_on_state_and_orientation()
-        sprite = self.flip_sprite_if_needed(sprite)
-        sprite_resized = self.resize_sprite(sprite)
-        self.blit_sprite(sprite_resized)
-        self.create_mask_from_sprite(sprite_resized)
+        
+        screen_x = self.x_iso - camera.x
+        screen_y = self.y_iso - camera.y
+        
+        offset_x = SPRITE_WIDTH * camera.zoom
+        offset_y = SPRITE_HEIGHT * camera.zoom
+        
+        if -offset_x <= screen_x <= camera.width + offset_x and -offset_y <= screen_y <= camera.height + offset_y:
+            sprite = self.get_sprite_based_on_state_and_orientation()
+            sprite = self.flip_sprite_if_needed(sprite)
+            sprite_resized = self.resize_sprite(sprite)
+            self.blit_sprite(sprite_resized)
+            self.create_mask_from_sprite(sprite_resized)
 
     def get_sprite_based_on_state_and_orientation(self):
         if self.entity.state == "attacking":

@@ -10,15 +10,20 @@ class IndicatorObject(Object):
         self.indicator_mask = pg.mask.from_surface(indicator)
 
     def draw(self, camera):
-        indicator_resized = pg.transform.scale(
-            self.indicator,
-            (int(SPRITE_WIDTH * camera.zoom), int(SPRITE_HEIGHT * camera.zoom))
-        )
-        self.indicator_mask = pg.mask.from_surface(indicator_resized)
-    
         self.x_iso, self.y_iso = calculate_isometric_position(self.x, self.y, self.z, camera.zoom)
-        
-        self.game.screen.blit(indicator_resized, (self.x_iso - camera.x, self.y_iso - camera.y))
+        screen_x = self.x_iso - camera.x
+        screen_y = self.y_iso - camera.y
+
+        offset_x = SPRITE_WIDTH * camera.zoom
+        offset_y = SPRITE_HEIGHT * camera.zoom
+
+        if -offset_x <= screen_x <= camera.width + offset_x and -offset_y <= screen_y <= camera.height + offset_y:
+            indicator_resized = pg.transform.scale(
+                self.indicator,
+                (int(SPRITE_WIDTH * camera.zoom), int(SPRITE_HEIGHT * camera.zoom))
+            )
+            self.indicator_mask = pg.mask.from_surface(indicator_resized)
+            self.game.screen.blit(indicator_resized, (self.x_iso - camera.x, self.y_iso - camera.y))
         
     def handle_click(self):
         self.type.handle_action(self.x, self.y, self.z)
