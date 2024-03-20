@@ -94,7 +94,25 @@ class Entity(Object):
     def apply_effect(self, effect):
         if effect.name == 'heal':
             self.heal(effect.value)
+        elif effect.name == 'poison':
+            self.poison(effect.value, effect.duration)
     
     def heal(self, amount):
         self.properties.health += amount
         self.properties.health = min(self.properties.health, self.properties.max_health)
+        
+    def poison(self, amount, duration):
+        self.properties.health -= amount
+        self.properties.health = max(self.properties.health, 0)
+        self.properties.poisoned = duration
+        self.properties.poison_amount = amount
+        
+    def check_status_effects(self):
+        if self.properties.poisoned > 0:
+            self.properties.health -= self.properties.poison_amount
+            self.properties.poisoned -= 1
+            
+    def check_health(self):
+        if self.properties.health <= 0:
+            self.game.object_manager.remove_object(self)
+            self.game.game_logic.check_game_over()
