@@ -57,4 +57,5 @@ class ObjectManager:
         entity_type_priority = {Entity: 1, Indicator: 2}
         objects = sorted(self.get_objects(), key=lambda obj: (obj.z, entity_type_priority.get(type(obj), 3), obj.y, obj.x))
         for obj in objects:
-            obj.draw(self.game.camera)
+            if not obj.is_hidden:
+                obj.draw(self.game.camera)

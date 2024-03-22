@@ -4,6 +4,7 @@ from astra.game.common.settings import ITEM_WIDTH, ITEM_HEIGHT
 class Item(Object):
     def __init__(self, game, x, y, z, properties):
         super().__init__(game, x, y, z)
+        self.is_hidden = False
         self.properties = properties
         
     def draw(self, camera):

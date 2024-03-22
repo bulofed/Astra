@@ -11,6 +11,7 @@ class Entity(Object):
     def __init__(self, game, x, y, z, properties=None):
         """An entity is a game object that can move and interact with other entities."""
         super().__init__(game, x, y, z)
+        self.is_hidden = False
         self.state = 'idle'
         self.orientation = 'down'
         self.flip = False

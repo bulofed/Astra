@@ -41,4 +41,22 @@ class Map:
             for y, row in enumerate(level['map']):
                 for x, block_type in enumerate(row):
                     if block_type != 0:
-                        self.game.object_manager.add_object(Block(self.game, x, y, z, block_type))
+                        block = Block(self.game, x, y, z, block_type)
+                        self.game.object_manager.add_object(block)
+                        self.world_map.append(block)
+        self.world_map.sort(key=lambda block: (block.y, block.x, -block.z))
+        self.mark_hidden_blocks()
+
+    def mark_hidden_blocks(self):
+        """
+        Marks blocks that are hidden by other blocks.
+        """
+        last_block = None
+        for block in self.world_map:
+            block.is_hidden = (
+                last_block is not None
+                and block.x == last_block.x
+                and block.y == last_block.y
+                and block.z <= last_block.z
+            )
+            last_block = block

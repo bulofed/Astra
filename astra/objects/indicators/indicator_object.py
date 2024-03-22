@@ -4,6 +4,7 @@ from astra.objects.object import Object, pg, calculate_isometric_position
 class IndicatorObject(Object):
     def __init__(self, game, entity, x, y, z, indicator, type):
         super().__init__(game, x, y, z)
+        self.is_hidden = False
         self.entity = entity
         self.indicator = indicator
         self.type = type
