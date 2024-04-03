@@ -4,15 +4,21 @@ class Menu:
     def __init__(self, game):
         self.game = game
         self.buttons = []
+        self.texts = []
         self.selected = 0
 
     def add_button(self, button):
         self.buttons.append(button)
         
+    def add_text(self, text, x, y):
+        self.texts.append((text, x, y))
+        
     def draw(self):
         for i, button in enumerate(self.buttons):
             color = (255, 0, 0) if i == self.selected else None
             button.draw(self.game.screen, color)
+        for text, x, y in self.texts:
+            self.game.screen.blit(text, (x, y))
 
     def handle_input(self, event):
         if event.type == pygame.KEYDOWN:

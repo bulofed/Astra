@@ -58,11 +58,14 @@ class Game:
         if event.type == pg.QUIT:
             self.quit_game()
         elif (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE and not self.menus):
-            self.menus.append(PauseMenu(self))
+            self.push_menu(PauseMenu(self))
         elif self.menus:
             self.menus[-1].handle_input(event)
         else:
             self.mouse_handler.handle_event(event)
+            
+    def push_menu(self, menu):
+        self.menus.append(menu)
 
     def check_events(self):
         for event in pg.event.get():

@@ -20,6 +20,14 @@ class Entity(Object):
         self.indicators_used = [AttackIndicator(self), MoveIndicator(self)]
         self.inventory = Inventory()
         self.properties = properties or EntityProperties()
+        self.stats = {
+            'kills': 0,
+            'deaths': 0,
+            'damage_dealt': 0,
+            'damage_received': 0,
+            'number_health_potions': 0,
+            'steps_taken': 0,
+        }
         
     def draw(self, camera):
         self.sprite_manager.draw(camera)
@@ -31,14 +39,19 @@ class Entity(Object):
         dx, dy = self.x - x, self.y - y
         self.set_orientation(dx, dy)
         self.x, self.y, self.z = x, y, z
+        self.stats['steps_taken'] += abs(dx) + abs(dy)
         
     def attack(self, target):
         dx, dy = self.x - target.x, self.y - target.y
         self.set_orientation(dx, dy)
         self.animate_attack()
         target.properties.health -= self.properties.damage
+        self.stats['damage_dealt'] += self.properties.damage
+        target.stats['damage_received'] += self.properties.damage
         if target.properties.health <= 0:
             self.game.object_manager.remove_object(target)
+            self.stats['kills'] += 1
+            target.stats['deaths'] += 1
             self.game.game_logic.check_game_over()
             
     def set_orientation(self, dx, dy):
@@ -95,12 +108,12 @@ class Entity(Object):
     def apply_effect(self, effect):
         if effect.name == 'heal':
             self.heal(effect.value)
+            self.stats['number_health_potions'] += 1
         elif effect.name == 'poison':
             self.poison(effect.value, effect.duration)
     
     def heal(self, amount):
-        self.properties.health += amount
-        self.properties.health = min(self.properties.health, self.properties.max_health)
+        self.properties.health = min(self.properties.health + amount, self.properties.max_health)
         
     def poison(self, amount, duration):
         self.properties.health -= amount
