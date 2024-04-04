@@ -13,6 +13,7 @@ class Game:
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode(RES)
+        pg.display.set_caption('Astra')
         self.clock = pg.time.Clock()
         self.delta = 1
         self.game_logic = GameLogic()

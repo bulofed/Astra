@@ -11,7 +11,7 @@ class Map:
         """
         Loads the map data from a file.
         """
-        map_path = os.path.join('astra', 'assets', 'maps', f'stage{level}.json')
+        map_path = os.path.join('test_gen_map', 'level0.json')
         with open(map_path, 'r') as f:
             self.mini_map = eval(f.read())
         self.load_block_images()

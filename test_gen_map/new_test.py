@@ -3,8 +3,10 @@ import random as rand
 import json
 
 root = Tk()
-resX = 1000; resY = 500
-canvas = Canvas(root, bg="black", height=resY, width=resX); canvas.pack()
+resX = 1000
+resY = 500
+canvas = Canvas(root, bg="black", height=resY, width=resX)
+canvas.pack()
 
 # Définition des limites pour la génération des nœuds
 x_lower_limit = 0
@@ -21,39 +23,42 @@ map = {
     'Choice': [-75, 100]
 }
 
+
 class node:
     def __init__(self, xy):
         self.xy = xy
         self.el = 0
-        self.temp = 0         
+        self.temp = 0
         self.neighbors = []
         self.active = True
-        
+
     def render(self):
         if self.el <= map['cLevel']:
             color = 'blue'
-        elif self.el <= 25 and self.temp <=0:
+        elif self.el <= 25 and self.temp <= 0:
             color = 'light grey'
-        elif self.el <= 25 and self.temp <=5:
+        elif self.el <= 25 and self.temp <= 5:
             color = 'green'
-        elif self.el <= 25 and self.temp <=10:
+        elif self.el <= 25 and self.temp <= 10:
             color = 'dark green'
-        elif self.el <= 25 and self.temp <=100:
+        elif self.el <= 25 and self.temp <= 100:
             color = 'yellow'
         else:
             color = 'white'
-        a = self.xy[0]*5; b = self.xy[1]*5
-        c = a + 5; d = b + 5
-        canvas.create_rectangle(a,b,c,d, fill= color, outline= color)
-        
+        a = self.xy[0]*5
+        b = self.xy[1]*5
+        c = a + 5
+        d = b + 5
+        canvas.create_rectangle(a, b, c, d, fill=color, outline=color)
+
     def to_dict(self):
         color_mapping = {
-        'blue': 5,
-        'light grey': 3,
-        'green': 4,
-        'dark green': 4,
-        'yellow': 2,
-        'white': 6,
+            'blue': 5,
+            'light grey': 3,
+            'green': 4,
+            'dark green': 4,
+            'yellow': 2,
+            'white': 6,
         }
 
         color = 'white'  # Default color
@@ -77,15 +82,16 @@ class node:
         }
 
 
-
 def genNodes():
     for i in range(map['resX']):
         for j in range(map['resY']):
             if x_lower_limit <= i <= x_upper_limit and y_lower_limit <= j <= y_upper_limit:
-                map['nodes'].append(node([i,j]))
-            
+                map['nodes'].append(node([i, j]))
+
+
 print('Gen')
 genNodes()
+
 
 def getNeighbors():
     temp = []
@@ -104,8 +110,10 @@ def getNeighbors():
                 if len(n1.neighbors) >= 2:
                     break
 
+
 print('Getting Neighbors')
 getNeighbors()
+
 
 def seed():
     start_node = rand.choice(map['nodes'])
@@ -119,12 +127,15 @@ def seed():
                     n.el = rand.choice(map['Choice'])
                     n.temp = rand.choice(map['Choice'])
 
+
 print('Seeding')
 seed()
+
 
 def setActive():
     for n in map['nodes']:
         n.active = True
+
 
 def smoothMap():
     for n1 in map['nodes']:
@@ -141,37 +152,49 @@ def smoothMap():
                         n1.temp = a
                         n2.temp = a
 
+
 def raiseLand():
     for n in map['nodes']:
         if n.el > 0:
             if rand.randrange(0, 100) < 1:
                 n.el += 100
+
+
 def lowerSea():
     for n in map['nodes']:
         if n.el <= 0:
             if rand.randrange(0, 100) < 0:
                 n.el -= 100
+
+
 def raiseTemp():
     for n in map['nodes']:
         if n.el > 0:
             if rand.randrange(0, 100) < 1:
                 n.temp += 10
 
+
 def process1():
     setActive()
     smoothMap()
+
+
 def process2():
     setActive()
     lowerSea()
     canvas.delete('all')
+
+
 def process3():
     setActive()
-    raiseLand()  
+    raiseLand()
+
+
 def process4():
     setActive()
     raiseTemp()
 
-    
+
 # print('0')
 # for i in range(100):
 #     process1()
@@ -210,23 +233,25 @@ def generate_map_for_height(height):
     nodes_dict = [node.to_dict() for node in map['nodes']]
 
     # Extract 'color_number' for each node's neighbors and create a 100x100 map
-    map_data = [[0] * 100 for _ in range(100)]
+    map_data = [[0] * 30 for _ in range(30)]
 
     for row in nodes_dict:
         x, y = row['xy']
         for neighbor in row['neighbors']:
-            neighbor_node = next((n for n in nodes_dict if n['xy'] == neighbor), None)
+            neighbor_node = next(
+                (n for n in nodes_dict if n['xy'] == neighbor), None)
             if neighbor_node:
                 nx, ny = neighbor_node['xy']
                 # Scale coordinates to fit within the range [0, 99]
-                scaled_nx, scaled_ny = int(nx % 100), int(ny % 100)
-                map_data[scaled_nx][scaled_ny] = neighbor_node['color_number']
+                scaled_nx, scaled_ny = int(nx % 30), int(ny % 30)
+                map_data[scaled_ny][scaled_nx] = neighbor_node['color_number']
 
     # Insert the current height and map at the beginning of the levels list
     map['levels'].insert(0, {
         'height': height,
         'map': map_data
     })
+
 
 # Reset 'levels' before generating new levels
 map['levels'] = []
